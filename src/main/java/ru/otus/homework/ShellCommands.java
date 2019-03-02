@@ -96,6 +96,12 @@ public class ShellCommands {
         return printer.printComments(comment);
     }
 
+    @ShellMethod("Get all comments by mark")
+    private Table getCommentsByMark(@ShellOption byte mark) {
+        List<Comment> comment = libraryService.getCommentsByMark(mark);
+        return printer.printComments(comment);
+    }
+
     @ShellMethod("Add comment")
     private void addComment(@ShellOption Long book_id,
                             @ShellOption byte mark,

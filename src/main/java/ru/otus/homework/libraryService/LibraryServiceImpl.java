@@ -18,15 +18,16 @@ import java.util.stream.Collectors;
 public class LibraryServiceImpl implements LibraryService{
     private GenreRepository genreRepository;
     private AuthorRepository authorRepository;
-    private CommentRepository commentRepository;
     private BookRepository bookRepository;
 
+    private CommentRepository commentRepository;
+
     @Autowired
-    public LibraryServiceImpl(GenreRepository genreRepository, AuthorRepository authorRepository, CommentRepository commentRepository, BookRepository bookRepository) {
+    public LibraryServiceImpl(GenreRepository genreRepository, AuthorRepository authorRepository, BookRepository bookRepository, CommentRepository commentRepository) {
         this.genreRepository = genreRepository;
         this.authorRepository = authorRepository;
-        this.commentRepository = commentRepository;
         this.bookRepository = bookRepository;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -36,72 +37,77 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public Author getAuthorById(Long id) {
-        return authorRepository.getById(id);
+        return authorRepository.findAuthorById(id);
     }
 
     @Override
     public List<Author> getAllAuthors() {
-        return authorRepository.getAllAuthors();
+        return authorRepository.findAll();
     }
 
     @Override
     public void addAuthor(Author author) {
-        authorRepository.addAuthor(author);
+        authorRepository.save(author);
     }
 
     @Override
     public void removeAuthor(Long id) {
-        authorRepository.removeAuthor(id);
+        authorRepository.deleteById(id);
     }
 
     @Override
     public Genre getGenreById(Long id) {
-        return genreRepository.getById(id);
+        return genreRepository.findGenreById(id);
     }
 
     @Override
     public List<Genre> getAllGenres() {
-        return genreRepository.getAllGenres();
+        return genreRepository.findAll();
     }
 
     @Override
     public void addGenre(Genre genre) {
-        genreRepository.addGenre(genre);
+        genreRepository.save(genre);
     }
 
     @Override
     public void removeGenre(Long id) {
-        genreRepository.removeGenre(id);
+        genreRepository.deleteById(id);
     }
 
     @Override
     public Comment getCommentById(Long id) {
-        return commentRepository.getById(id);
+        return commentRepository.findCommentById(id);
     }
 
     @Override
     public List<Comment> getAllComments() {
-        return commentRepository.getAllComments();
+        return commentRepository.findAll();
+    }
+
+    @Override
+    public List<Comment> getCommentsByMark(byte mark) {
+        return commentRepository.findByMark(mark);
     }
 
     @Override
     public void addComment(Comment comment) {
-        commentRepository.addComment(comment);
+        commentRepository.save(comment);
     }
 
     @Override
     public void removeComment(Long id) {
-        commentRepository.removeComment(id);
+        commentRepository.deleteById(id);
     }
 
     @Override
     public Book getBookById(Long id) {
-        return bookRepository.getById(id);
+        return bookRepository.findBookById(id);
     }
 
     @Override
     public List<Book> getAllBooks() {
-        return bookRepository.getAllBooks();
+        return bookRepository.findAll();
     }
 
     @Override
@@ -109,12 +115,12 @@ public class LibraryServiceImpl implements LibraryService{
         Book book = new Book(title, pages);
         book.setAuthors(idAuthors.stream().map(Author::new).collect(Collectors.toSet()));
         book.setGenres(idGenres.stream().map(Genre::new).collect(Collectors.toSet()));
-        bookRepository.addBook(book);
+        bookRepository.save(book);
     }
 
     @Override
     public void removeBook(Long id) {
-        bookRepository.removeBook(id);
+        bookRepository.deleteById(id);
     }
 
     @Override
