@@ -30,6 +30,8 @@ public interface LibraryService {
 
     List<Comment> getAllComments();
 
+    List<Comment> getCommentsByMark(byte mark);
+
     void addComment(Comment comment);
 
     void removeComment(Long id);

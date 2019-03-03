@@ -18,14 +18,14 @@ public class Comment {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    private Long id_book;
+    private Long idBook;
     private byte mark;
     private String userName;
     private String comment;
     private Date createDate;
 
-    public Comment(Long id_book, byte mark, String userName, String comment, Date createDate) {
-        this.id_book = id_book;
+    public Comment(Long idBook, byte mark, String userName, String comment, Date createDate) {
+        this.idBook = idBook;
         this.mark = mark;
         this.userName = userName;
         this.comment = comment;

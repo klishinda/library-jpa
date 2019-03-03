@@ -1,13 +1,14 @@
 package ru.otus.homework.authorRepository;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import ru.otus.homework.model.Author;
 
 import java.util.List;
 
-public interface AuthorRepository {
+public interface AuthorRepository extends CrudRepository<Author, Long> {
+    @Query(value = "select a.* from authors a where not exists (select 1 from book_authors b where b.id_author = a.id)", nativeQuery = true)
     List<Author> getUnusedAuthors();
-    Author getById(Long id);
-    List<Author> getAllAuthors();
-    void addAuthor(Author author);
-    void removeAuthor(Long id);
+    Author findAuthorById(Long id);
+    List<Author> findAll();
 }
