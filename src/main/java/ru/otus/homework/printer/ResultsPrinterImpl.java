@@ -7,64 +7,58 @@ import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ResultsPrinterImpl implements ResultsPrinter {
 
     @Override
-    public Table printAuthors(List<Author> list) {
-        String[][] table = new String[list.size()+1][2];
+    public Table printAuthors(Set<Author> list) {
+        String[][] table = new String[list.size()+1][1];
         TableModel model = new ArrayTableModel(table);
         TableBuilder tableBuilder = new TableBuilder(model);
 
-        table[0][0] = "ID";
-        table[0][1] = "АВТОР";
-        for (int i = 0; i < list.size(); i++) {
-            table[i+1][0] = String.valueOf(list.get(i).getId());
-            table[i+1][1] = list.get(i).getName() + " " + list.get(i).getSurname();
+        int i = 0;
+        table[0][0] = "АВТОР";
+        for (Author a : list) {
+            table[++i][0] = a.getName() + " " + a.getSurname();
         }
 
         return tableBuilder.addFullBorder(BorderStyle.fancy_light).build();
     }
 
     @Override
-    public Table printGenres(List<Genre> list) {
-        String[][] table = new String[list.size()+1][2];
+    public Table printGenres(Set<Genre> list) {
+        String[][] table = new String[list.size()+1][1];
         TableModel model = new ArrayTableModel(table);
         TableBuilder tableBuilder = new TableBuilder(model);
 
-        table[0][0] = "ID";
-        table[0][1] = "ЖАНР";
-        for (int i = 0; i < list.size(); i++) {
-            table[i+1][0] = String.valueOf(list.get(i).getId());
-            table[i+1][1] = list.get(i).getName();
+        int i = 0;
+        table[0][0] = "ЖАНР";
+        for (Genre g : list) {
+            table[++i][0] = g.getName();
         }
 
         return tableBuilder.addFullBorder(BorderStyle.fancy_light).build();
     }
 
     @Override
-    public Table printComments(List<Comment> list) {
-        String[][] table = new String[list.size()+1][5];
+    public Table printComments(Set<Comment> list) {
+        String[][] table = new String[list.size()+1][3];
         TableModel model = new ArrayTableModel(table);
         TableBuilder tableBuilder = new TableBuilder(model);
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        table[0][0] = "ID";
-        table[0][1] = "ОЦЕНКА";
-        table[0][2] = "ПОЛЬЗОВАТЕЛЬ";
-        table[0][3] = "КОММЕНТАРИЙ";
-        table[0][4] = "ДАТА ДОБАВЛЕНИЯ КОММЕНТАРИЯ";
-        for (int i = 0; i < list.size(); i++) {
-            table[i+1][0] = String.valueOf(list.get(i).getId());
-            table[i+1][1] = String.valueOf(list.get(i).getMark());
-            table[i+1][2] = list.get(i).getUserName();
-            table[i+1][3] = list.get(i).getComment();
-            table[i+1][4] = formatter.format(list.get(i).getCreateDate());
+        int i = 0;
+        table[0][0] = "ОЦЕНКА";
+        table[0][1] = "ПОЛЬЗОВАТЕЛЬ";
+        table[0][2] = "КОММЕНТАРИЙ";
+        for (Comment c : list) {
+            System.out.println(i + " " + c.getComment());
+            table[++i][0] = String.valueOf(c.getMark());
+            table[i][1] = c.getUserName();
+            table[i][2] = c.getComment();
         }
 
         return tableBuilder.addFullBorder(BorderStyle.fancy_light).build();
@@ -83,15 +77,20 @@ public class ResultsPrinterImpl implements ResultsPrinter {
         for (int i = 0; i < list.size(); i++) {
             StringBuilder authors = new StringBuilder();
             table[i+1][0] = list.get(i).getName();
-            for (Author a : list.get(i).getAuthors()) {
-                if (authors.toString().equals("")) {
-                    authors.append(a.getName()).append(" ").append(a.getSurname());
-                }
-                else {
-                    authors.append(", ").append(a.getName()).append(" ").append(a.getSurname());
+            Set<Author> authorList = list.get(i).getAuthors();
+            if (authorList != null) {
+                for (Author a : authorList) {
+                    if (authors.toString().equals("")) {
+                        authors.append(a.getName()).append(" ").append(a.getSurname());
+                    } else {
+                        authors.append(", ").append(a.getName()).append(" ").append(a.getSurname());
+                    }
                 }
             }
-            table[i+1][1] = list.get(i).getGenres().stream().map(Genre::getName).collect(Collectors.joining(", "));
+
+            if (list.get(i).getGenres() != null) {
+                table[i + 1][1] = list.get(i).getGenres().stream().map(Genre::getName).collect(Collectors.joining(", "));
+            }
             table[i+1][2] = authors.toString();
             table[i+1][3] = String.valueOf(list.get(i).getPages());
         }

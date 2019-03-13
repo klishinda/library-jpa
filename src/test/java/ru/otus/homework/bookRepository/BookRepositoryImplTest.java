@@ -1,95 +1,94 @@
 package ru.otus.homework.bookRepository;
 
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
-import ru.otus.homework.model.Author;
-import ru.otus.homework.model.Book;
-import ru.otus.homework.model.Genre;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataMongoTest
+@ExtendWith(SpringExtension.class)
 public class BookRepositoryImplTest {
 
-    @Autowired private TestEntityManager entityManager;
-    @Autowired private BookRepository repository;
+    /*@Autowired
+    MongoTemplate mongoTemplate;
 
-    private Book addNewBook() {
-        Set<Genre> genres = new HashSet<>();
-        genres.add(new Genre("Genre1"));
-        genres.add(new Genre("Genre2"));
-        Set<Author> authors = new HashSet<>();
-        authors.add(new Author("Surname", "Name"));
-        authors.add(new Author("Surname2", "Name2"));
-        return new Book("Test book", 1000, authors, genres);
+    @DisplayName("check that mongo test work")
+    @Test
+    public void test() {
+        // given
+        DBObject objectToSave = BasicDBObjectBuilder.start().add("key", "value").get();
+        System.out.println(objectToSave.toString());
+
+        // when
+        mongoTemplate.save(objectToSave, "collection");
+
+        // then
+        assertThat(mongoTemplate.findAll(DBObject.class, "testCollection")).extracting("key").containsOnly("value");
+
+    }*/
+
+    private MongodExecutable mongodExecutable;
+    private MongoTemplate mongoTemplate;
+
+    @BeforeEach
+    void setup() throws Exception {
+        String ip = "localhost";
+        int port = 27017;
+
+        IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
+                .net(new Net(ip, port, Network.localhostIsIPv6()))
+                .build();
+
+        MongodStarter starter = MongodStarter.getDefaultInstance();
+        mongodExecutable = starter.prepare(mongodConfig);
+        mongodExecutable.start();
+        mongoTemplate = new MongoTemplate(new MongoClient(ip, port), "library");
+    }
+
+    @AfterEach
+    void clean() {
+        mongodExecutable.stop();
     }
 
     @Test
-    public void getAllBooks() {
-        Book newBook = addNewBook();
-        entityManager.persist(newBook);
+    public void test() throws Exception {
+        // given
+        String ip = "localhost";
+        int port = 27017;
 
-        List<Book> books = repository.findAll();
-        assertThat(books.get(0).getName()).isEqualTo("Восточный экспресс");
-        assertThat(books.get(1).getPages()).isEqualTo(700);
-    }
+        IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
+                .net(new Net(ip, port, Network.localhostIsIPv6()))
+                .build();
 
-    @Test
-    public void findBookById() {
-        Book book = repository.findBookById(3L);
-        assertThat(book.getName()).isEqualTo("Координаты чудес света");
-    }
+        MongodStarter starter = MongodStarter.getDefaultInstance();
+        mongodExecutable = starter.prepare(mongodConfig);
+        mongodExecutable.start();
+        mongoTemplate = new MongoTemplate(new MongoClient(ip, port), "library");
 
-    @Test
-    public void getAverageMarkByBook() {
-        Book newBook = addNewBook();
-        entityManager.persist(newBook);
+        DBObject objectToSave = BasicDBObjectBuilder.start()
+                .add("key", "value")
+                .get();
 
-        Book book = repository.findBookByName("Test book");
-        Double mark = repository.getAverageMarkByBook(book.getId());
-        assertThat(mark).isEqualTo(null);
+        // when
+        mongoTemplate.save(objectToSave, "collection");
 
-        book = repository.findBookByName("Восточный экспресс");
-        mark = repository.getAverageMarkByBook(book.getId());
-        assertThat(mark).isEqualTo(5.5);
-    }
-
-    @Test
-    public void getAllCommentsByBook() {
-        List<Book> books = repository.getAllCommentsByBook("ост");
-        assertThat(books.get(0).getComments().size()).isEqualTo(2);
-    }
-
-    @Test
-    public void save() {
-        Book newBook = addNewBook();
-
-        repository.save(newBook);
-        Book book = repository.findBookByName("Test book");
-        assertThat(book.getName()).isEqualTo("Test book");
-    }
-
-    @Test
-    public void deleteById() {
-        Book newBook = addNewBook();
-        entityManager.persist(newBook);
-
-        Book book = repository.findBookByName("Test book");
-        assertThat(book.getName()).isEqualTo("Test book");
-
-        repository.deleteById(book.getId());
-        book = repository.findBookByName("Test book");
-        assertThat(book).isEqualTo(null);
+        // then
+        assertThat(mongoTemplate.findAll(DBObject.class, "collection")).extracting("key")
+                .containsOnly("value");
     }
 }

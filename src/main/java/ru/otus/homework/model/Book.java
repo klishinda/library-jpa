@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.util.Set;
 
 
@@ -13,29 +15,14 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "books")
+@Document(collection = "library")
 public class Book {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id;
+    ObjectId databaseId;
     private String name;
     private int pages;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable (
-            name = "book_authors",
-            joinColumns = @JoinColumn(name = "id_book", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id_author", referencedColumnName = "id")
-    )
     private Set<Author> authors;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable (
-            name = "genres_of_books",
-            joinColumns = @JoinColumn(name = "id_book", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id_genre", referencedColumnName = "id")
-    )
     private Set<Genre> genres;
-    @OneToMany(mappedBy = "idBook", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Comment> comments;
 
     public Book(String name, int pages) {

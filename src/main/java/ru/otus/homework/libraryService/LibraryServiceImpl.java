@@ -1,108 +1,110 @@
 package ru.otus.homework.libraryService;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.otus.homework.GenreRepository.GenreRepository;
-import ru.otus.homework.authorRepository.AuthorRepository;
+import ru.otus.homework.bookRepository.BookRepositoryCustom;
 import ru.otus.homework.bookRepository.BookRepository;
-import ru.otus.homework.commentRepository.CommentRepository;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Component
 public class LibraryServiceImpl implements LibraryService{
-    private GenreRepository genreRepository;
-    private AuthorRepository authorRepository;
     private BookRepository bookRepository;
-
-    private CommentRepository commentRepository;
+    private ru.otus.homework.bookRepository.BookRepositoryCustom bookRepositoryCustom;
 
     @Autowired
-    public LibraryServiceImpl(GenreRepository genreRepository, AuthorRepository authorRepository, BookRepository bookRepository, CommentRepository commentRepository) {
-        this.genreRepository = genreRepository;
-        this.authorRepository = authorRepository;
+    public LibraryServiceImpl( BookRepository bookRepository, BookRepositoryCustom bookRepositoryCustom) {
         this.bookRepository = bookRepository;
-        this.commentRepository = commentRepository;
+        this.bookRepositoryCustom = bookRepositoryCustom;
     }
 
     @Override
-    public List<Author> getUnusedAuthors() {
-        return authorRepository.getUnusedAuthors();
+    public Set<Author> getAuthorByName(String surname) {
+        return bookRepositoryCustom.findBookByAuthorSurname(surname).getAuthors();
     }
 
     @Override
-    public Author getAuthorById(Long id) {
-        return authorRepository.findAuthorById(id);
+    public Set<Author> getAllAuthors() {
+        List<Book> books = bookRepository.findAll();
+        Set<Author> authors = null;
+        for (Book b : books) {
+            if (b.getAuthors() != null) {
+                if (authors != null) {
+                    authors.addAll(b.getAuthors());
+                } else {
+                    authors = b.getAuthors();
+                }
+            }
+        }
+        return authors;
     }
 
     @Override
-    public List<Author> getAllAuthors() {
-        return authorRepository.findAll();
+    public void addAuthor(ObjectId bookId, Author author) {
+        bookRepositoryCustom.saveNewAuthor(bookId, author);
     }
 
     @Override
-    public void addAuthor(Author author) {
-        authorRepository.save(author);
+    public void removeAuthor(ObjectId bookId, Author author) {
+        bookRepositoryCustom.deleteAuthor(bookId, author);
     }
 
     @Override
-    public void removeAuthor(Long id) {
-        authorRepository.deleteById(id);
+    public Set<Genre> getAllGenres() {
+        List<Book> books = bookRepository.findAll();
+        Set<Genre> genres = null;
+        for (Book b : books) {
+            if (b.getGenres() != null) {
+                if (genres != null) {
+                    genres.addAll(b.getGenres());
+                } else {
+                    genres = b.getGenres();
+                }
+            }
+        }
+        return genres;
     }
 
     @Override
-    public Genre getGenreById(Long id) {
-        return genreRepository.findGenreById(id);
+    public void addGenre(ObjectId bookId, Genre genre) {
+        bookRepositoryCustom.saveNewGenre(bookId, genre);
     }
 
     @Override
-    public List<Genre> getAllGenres() {
-        return genreRepository.findAll();
+    public void removeGenre(ObjectId bookId, Genre genre) {
+        bookRepositoryCustom.deleteGenre(bookId, genre);
     }
 
     @Override
-    public void addGenre(Genre genre) {
-        genreRepository.save(genre);
+    public Set<Comment> getAllComments() {
+        List<Book> books = bookRepository.findAll();
+        Set<Comment> comments = null;
+        for (Book b : books) {
+            if (b.getComments() != null) {
+                if (comments != null) {
+                    comments.addAll(b.getComments());
+                } else {
+                    comments = b.getComments();
+                }
+            }
+        }
+        return comments;
     }
 
     @Override
-    public void removeGenre(Long id) {
-        genreRepository.deleteById(id);
+    public void addComment(ObjectId bookId, Comment comment) {
+        bookRepositoryCustom.saveNewComment(bookId, comment);
     }
 
     @Override
-    public Comment getCommentById(Long id) {
-        return commentRepository.findCommentById(id);
-    }
-
-    @Override
-    public List<Comment> getAllComments() {
-        return commentRepository.findAll();
-    }
-
-    @Override
-    public List<Comment> getCommentsByMark(byte mark) {
-        return commentRepository.findByMark(mark);
-    }
-
-    @Override
-    public void addComment(Comment comment) {
-        commentRepository.save(comment);
-    }
-
-    @Override
-    public void removeComment(Long id) {
-        commentRepository.deleteById(id);
-    }
-
-    @Override
-    public Book getBookById(Long id) {
-        return bookRepository.findBookById(id);
+    public void removeComment(ObjectId bookId, Comment comment) {
+        bookRepositoryCustom.deleteComment(bookId, comment);
     }
 
     @Override
@@ -111,31 +113,29 @@ public class LibraryServiceImpl implements LibraryService{
     }
 
     @Override
-    public void addBook(String title, int pages, List<Long> idAuthors, List<Long> idGenres) {
+    public void addBook(String title, int pages) {
         Book book = new Book(title, pages);
-        book.setAuthors(idAuthors.stream().map(Author::new).collect(Collectors.toSet()));
-        book.setGenres(idGenres.stream().map(Genre::new).collect(Collectors.toSet()));
-        bookRepository.save(book);
+        bookRepositoryCustom.saveNewBook(book);
     }
 
     @Override
-    public void removeBook(Long id) {
-        bookRepository.deleteById(id);
+    public void removeBook(ObjectId id) {
+        bookRepositoryCustom.deleteBook(id);
     }
 
     @Override
-    public Double getAverageMarkByBook(Long id) {
-        Double mark = bookRepository.getAverageMarkByBook(id);
+    public Double getAverageMarkByBook(ObjectId id) {
+        Double mark = bookRepositoryCustom.getAverageMarkByBook(id);
         if (mark == null) {
             return (double) 0;
         }
         else {
-            return bookRepository.getAverageMarkByBook(id);
+            return mark;
         }
     }
 
     @Override
     public List<Book> getAllCommentsByBook(String name) {
-        return bookRepository.getAllCommentsByBook(name);
+        return bookRepositoryCustom.findCommentsByBook(name);
     }
 }

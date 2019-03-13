@@ -1,0 +1,27 @@
+{
+	"name": "Восточный экспресс",
+	"pages": 150,
+	"genres": [
+		{
+			"name": "ДЕТЕКТИВ"
+		}
+	],
+	"authors": [
+		{
+			"name": "Агата",
+			"surname": "Кристи"
+		}
+	],
+	"comments": [
+		{
+			"mark": 10,
+			"userName": "Alex",
+			"comment": "Очень интересный детектив!"
+		},
+		{
+			"mark": 1,
+			"userName": "Sergey",
+			"comment": "Очень скучный детектив!"
+		}
+	]
+}

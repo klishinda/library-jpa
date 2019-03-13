@@ -2,12 +2,20 @@ server:
   port: 8089
 
 spring:
-  datasource:
-    platform: postgres
-    url: jdbc:postgresql://localhost:5432/library
-    username: postgres
-    password: qwerty
-    initialization-mode: always
+  #datasource:
+    #platform: postgres
+    #url: jdbc:postgresql://localhost:5432/library
+    #username: postgres
+    #password: qwerty
+    #initialization-mode: always
+  data:
+    mongodb:
+      port: 27017
+      host: localhost
+      username: root
+      password: root
+      database: library
+      authentication-database: library
   jpa:
     properties:
       hibernate:

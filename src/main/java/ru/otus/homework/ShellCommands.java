@@ -1,5 +1,6 @@
 package ru.otus.homework;
 
+import org.bson.types.ObjectId;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -12,7 +13,6 @@ import ru.otus.homework.model.Genre;
 import ru.otus.homework.printer.ResultsPrinter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @ShellComponent
@@ -27,103 +27,66 @@ public class ShellCommands {
 
     // AUTHORS
     @ShellMethod("Get author by id")
-    private Table getAuthorById(@ShellOption Long id) {
-        Author author = libraryService.getAuthorById(id);
-        List<Author> oneAuthor = new ArrayList<>();
-        oneAuthor.add(author);
-        return printer.printAuthors(oneAuthor);
+    private Table getAuthorBySurname(@ShellOption String name) {
+        return printer.printAuthors(libraryService.getAuthorByName(name));
     }
 
     @ShellMethod("Get all authors")
     private Table getAllAuthors() {
-        List<Author> au = libraryService.getAllAuthors();
+        Set<Author> au = libraryService.getAllAuthors();
         return printer.printAuthors(au);
     }
 
     @ShellMethod("Add author")
-    private void addAuthor(@ShellOption String name, @ShellOption String surname) {
-        libraryService.addAuthor(new Author(name, surname));
+    private void addAuthor(@ShellOption ObjectId id, @ShellOption String name, @ShellOption String surname) {
+        libraryService.addAuthor(id, new Author(name, surname));
     }
 
     @ShellMethod("Remove author")
-    private void deleteAuthor(@ShellOption Long id) {
-        libraryService.removeAuthor(id);
-    }
-
-    @ShellMethod("Get unused authors")
-    private Table getUnusedAuthors() {
-        List<Author> au = libraryService.getUnusedAuthors();
-        return printer.printAuthors(au);
+    private void deleteAuthor(@ShellOption ObjectId id, @ShellOption String name, @ShellOption String surname) {
+        libraryService.removeAuthor(id, new Author(name, surname));
     }
 
     // GENRES
-    @ShellMethod("Get genre by id")
-    private Table getGenreById(@ShellOption Long id) {
-        Genre genre = libraryService.getGenreById(id);
-        List<Genre> oneGenre = new ArrayList<>();
-        oneGenre.add(genre);
-        return printer.printGenres(oneGenre);
-    }
-
     @ShellMethod("Get all genres")
     private Table getAllGenres() {
-        List<Genre> genres = libraryService.getAllGenres();
-        return printer.printGenres(genres);
+        return printer.printGenres(libraryService.getAllGenres());
     }
 
     @ShellMethod("Add genre")
-    private void addGenre(@ShellOption String name) {
-        libraryService.addGenre(new Genre(name));
+    private void addGenre(@ShellOption ObjectId id, @ShellOption String name) {
+        libraryService.addGenre(id, new Genre(name));
     }
 
     @ShellMethod("Remove genre")
-    private void deleteGenre(@ShellOption Long id) {
-        libraryService.removeGenre(id);
+    private void deleteGenre(@ShellOption ObjectId id, @ShellOption String name) {
+        libraryService.removeGenre(id, new Genre(name));
     }
 
     // COMMENTS
-    @ShellMethod("Get comment by id")
-    private Table getCommentById(@ShellOption Long id) {
-        Comment comment = libraryService.getCommentById(id);
-        List<Comment> oneComment = new ArrayList<>();
-        oneComment.add(comment);
-        return printer.printComments(oneComment);
-    }
-
     @ShellMethod("Get all comments")
     private Table getAllComments() {
-        List<Comment> comment = libraryService.getAllComments();
-        return printer.printComments(comment);
-    }
-
-    @ShellMethod("Get all comments by mark")
-    private Table getCommentsByMark(@ShellOption byte mark) {
-        List<Comment> comment = libraryService.getCommentsByMark(mark);
+        Set<Comment> comment = libraryService.getAllComments();
         return printer.printComments(comment);
     }
 
     @ShellMethod("Add comment")
-    private void addComment(@ShellOption Long book_id,
+    private void addComment(@ShellOption ObjectId id,
                             @ShellOption byte mark,
                             @ShellOption String username,
                             @ShellOption String comment) {
-        libraryService.addComment(new Comment(book_id, mark, username, comment, new Date()));
+        libraryService.addComment(id, new Comment(mark, username, comment, new Date()));
     }
 
     @ShellMethod("Remove comment")
-    private void deleteComment(@ShellOption Long id) {
-        libraryService.removeComment(id);
+    private void deleteComment(@ShellOption ObjectId id,
+                               @ShellOption byte mark,
+                               @ShellOption String username,
+                               @ShellOption String comment) {
+        libraryService.removeComment(id, new Comment(mark, username, comment, new Date()));
     }
 
     // Books
-    @ShellMethod("Get book by id")
-    private Table getBookById(@ShellOption Long id) {
-        Book book = libraryService.getBookById(id);
-        List<Book> oneBook = new ArrayList<>();
-        oneBook.add(book);
-        return printer.printBooks(oneBook);
-    }
-
     @ShellMethod("Get all books")
     private Table getAllBooks() {
         List<Book> books = libraryService.getAllBooks();
@@ -131,7 +94,7 @@ public class ShellCommands {
     }
 
     @ShellMethod("Get average mark")
-    private Double getAverageMarkByBook(@ShellOption Long id) {
+    private Double getAverageMarkByBook(@ShellOption ObjectId id) {
         return libraryService.getAverageMarkByBook(id);
     }
 
@@ -142,33 +105,12 @@ public class ShellCommands {
 
     @ShellMethod("Add book")
     private void addBook(@ShellOption String name,
-                         @ShellOption int pages,
-                         @ShellOption String authorsId,
-                         @ShellOption String genresId) {
-        Scanner authorScanner = new Scanner(authorsId);
-        List<Long> authorList = new ArrayList<>();
-        while (authorScanner.hasNextInt()) {
-            authorList.add(authorScanner.nextLong());
-        }
-        Scanner genreScanner = new Scanner(genresId);
-        List<Long> genreList = new ArrayList<>();
-        while (genreScanner.hasNextInt()) {
-            genreList.add(genreScanner.nextLong());
-        }
-
-        authorList = Arrays.stream(authorsId.replace(",", " ").split("\\s"))
-                .map(Long::parseLong)
-                .collect(Collectors.toList());
-
-        genreList = Arrays.stream(genresId.replace(",", " ").split("\\s"))
-                .map(Long::parseLong)
-                .collect(Collectors.toList());
-
-        libraryService.addBook(name, pages, authorList, genreList);
+                         @ShellOption int pages) {
+        libraryService.addBook(name, pages);
     }
 
     @ShellMethod("Remove book")
-    private void deleteBook(@ShellOption Long id) {
+    private void deleteBook(@ShellOption ObjectId id) {
         libraryService.removeBook(id);
     }
 }
