@@ -2,93 +2,93 @@ package ru.otus.homework.bookRepository;
 
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import de.flapdoodle.embed.mongo.MongodExecutable;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
-import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
-import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runners.MethodSorters;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.otus.homework.model.Author;
+import ru.otus.homework.model.Book;
+import ru.otus.homework.model.Comment;
+import ru.otus.homework.model.Genre;
+
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BookRepositoryImplTest {
 
-    /*@Autowired
-    MongoTemplate mongoTemplate;
-
-    @DisplayName("check that mongo test work")
-    @Test
-    public void test() {
-        // given
-        DBObject objectToSave = BasicDBObjectBuilder.start().add("key", "value").get();
-        System.out.println(objectToSave.toString());
-
-        // when
-        mongoTemplate.save(objectToSave, "collection");
-
-        // then
-        assertThat(mongoTemplate.findAll(DBObject.class, "testCollection")).extracting("key").containsOnly("value");
-
-    }*/
-
-    private MongodExecutable mongodExecutable;
+    @Autowired
     private MongoTemplate mongoTemplate;
 
-    @BeforeEach
-    void setup() throws Exception {
-        String ip = "localhost";
-        int port = 27017;
+    @Autowired
+    private BookRepositoryCustom bookRepositoryCustom;
 
-        IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
-                .net(new Net(ip, port, Network.localhostIsIPv6()))
-                .build();
+    @Autowired
+    private BookRepository bookRepository;
 
-        MongodStarter starter = MongodStarter.getDefaultInstance();
-        mongodExecutable = starter.prepare(mongodConfig);
-        mongodExecutable.start();
-        mongoTemplate = new MongoTemplate(new MongoClient(ip, port), "library");
-    }
-
-    @AfterEach
-    void clean() {
-        mongodExecutable.stop();
+    @Test
+    public void aTest() {
+        DBObject objectToSave = BasicDBObjectBuilder.start().add("key", "value").get();
+        mongoTemplate.save(objectToSave, "collection");
+        assertThat(mongoTemplate.findAll(DBObject.class, "collection")).extracting("key").containsOnly("value");
     }
 
     @Test
-    public void test() throws Exception {
-        // given
-        String ip = "localhost";
-        int port = 27017;
+    @BeforeEach
+    public void bTestNewBook() {
+        Book testBook = bookRepository.findBookByName("Test Book");
+        if (testBook != null) {
+            bookRepositoryCustom.deleteBook(testBook.getDatabaseId());
+        }
+        bookRepositoryCustom.saveNewBook(new Book("Test Book", 999));
+        testBook = bookRepository.findBookByName("Test Book");
+        assertThat(testBook.getPages()).isEqualTo(999);
+    }
 
-        IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
-                .net(new Net(ip, port, Network.localhostIsIPv6()))
-                .build();
+    @Test
+    public void testNewAuthor() {
+        Book testBook = bookRepository.findBookByName("Test Book");
 
-        MongodStarter starter = MongodStarter.getDefaultInstance();
-        mongodExecutable = starter.prepare(mongodConfig);
-        mongodExecutable.start();
-        mongoTemplate = new MongoTemplate(new MongoClient(ip, port), "library");
+        Author testAuthor = new Author("Test", "Author");
+        bookRepositoryCustom.saveNewAuthor(testBook.getDatabaseId(), testAuthor);
+        testBook = bookRepositoryCustom.findBookByAuthorSurname("Test");
+        assertThat(testBook.getPages()).isEqualTo(999);
+        bookRepositoryCustom.deleteAuthor(testBook.getDatabaseId(), testAuthor);
+        testBook = bookRepositoryCustom.findBookByAuthorSurname("Test");
+        assertThat(testBook).isNull();
+    }
 
-        DBObject objectToSave = BasicDBObjectBuilder.start()
-                .add("key", "value")
-                .get();
+    @Test
+    public void testNewGenre() {
+        Book testBook = bookRepository.findBookByName("Test Book");
 
-        // when
-        mongoTemplate.save(objectToSave, "collection");
+        Genre testGenre = new Genre("Test Genre");
+        bookRepositoryCustom.saveNewGenre(testBook.getDatabaseId(), testGenre);
+        testBook = bookRepository.findBookByGenres(testGenre);
+        assertThat(testBook.getPages()).isEqualTo(999);
+        bookRepositoryCustom.deleteGenre(testBook.getDatabaseId(), testGenre);
+        testBook = bookRepository.findBookByGenres(testGenre);
+        assertThat(testBook).isNull();
+    }
 
-        // then
-        assertThat(mongoTemplate.findAll(DBObject.class, "collection")).extracting("key")
-                .containsOnly("value");
+    @Test
+    public void testNewComment() {
+        Book testBook = bookRepository.findBookByName("Test Book");
+
+        Comment testComment = new Comment((byte) 6, "TestUser", "TestComment", new Date());
+        bookRepositoryCustom.saveNewComment(testBook.getDatabaseId(), testComment);
+        testBook = bookRepository.findBookByComments(testComment);
+        assertThat(testBook.getPages()).isEqualTo(999);
+        bookRepositoryCustom.deleteComment(testBook.getDatabaseId(), testComment);
+        testBook = bookRepository.findBookByComments(testComment);
+        assertThat(testBook).isNull();
     }
 }

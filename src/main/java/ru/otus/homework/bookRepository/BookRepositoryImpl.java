@@ -16,7 +16,9 @@ import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -42,7 +44,14 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
     public void saveNewAuthor(ObjectId bookId, Author author) {
         Book book = getBookById(bookId);
 
-        book.getAuthors().add(author);
+        if (book.getAuthors() != null) {
+            book.getAuthors().add(author);
+        }
+        else {
+            Set<Author> newAuthor = new HashSet<>();
+            newAuthor.add(author);
+            book.setAuthors(new HashSet<>(newAuthor));
+        }
         mongoTemplate.save(book);
     }
 
@@ -59,7 +68,14 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
     public void saveNewGenre(ObjectId bookId, Genre genre) {
         Book book = getBookById(bookId);
 
-        book.getGenres().add(genre);
+        if (book.getGenres() != null) {
+            book.getGenres().add(genre);
+        }
+        else {
+            Set<Genre> newGenre = new HashSet<>();
+            newGenre.add(genre);
+            book.setGenres(newGenre);
+        }
         mongoTemplate.save(book);
     }
 
@@ -91,7 +107,14 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
     public void saveNewComment(ObjectId bookId, Comment comment) {
         Book book = getBookById(bookId);
 
-        book.getComments().add(comment);
+        if (book.getComments() != null) {
+            book.getComments().add(comment);
+        }
+        else {
+            Set<Comment> newComment = new HashSet<>();
+            newComment.add(comment);
+            book.setComments(new HashSet<>(newComment));
+        }
         mongoTemplate.save(book);
     }
 
