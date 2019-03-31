@@ -4,25 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
-import java.util.Set;
+import org.springframework.data.annotation.Id;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "authors")
 public class Author {
-
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private String surname;
     private String name;
-    @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Book> books;
 
     public Author(String surname, String name) {
         this.surname = surname;

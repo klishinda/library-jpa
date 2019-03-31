@@ -1,0 +1,35 @@
+{
+	"name": "Сердца Трёх",
+	"pages": 350,
+	"genres": [
+		{
+			"name": "ПРИКЛЮЧЕНИЯ"
+		},
+		{
+			"name": "РОМАН"
+		}
+	],
+	"authors": [
+		{
+			"name": "Джек",
+			"surname": "Лондон"
+		}
+	],
+	"comments": [
+		{
+			"mark": 5,
+			"userName": "Test1",
+			"comment": "Test1"
+		},
+		{
+			"mark": 6,
+			"userName": "Test2",
+			"comment": "Test2"
+		},
+		{
+			"mark": 7,
+			"userName": "Test3",
+			"comment": "Test3"
+		}
+	]
+}

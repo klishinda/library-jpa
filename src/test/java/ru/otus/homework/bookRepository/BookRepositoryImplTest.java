@@ -1,95 +1,94 @@
 package ru.otus.homework.bookRepository;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBObject;
+import org.junit.FixMethodOrder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
+import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataMongoTest
+@ExtendWith(SpringExtension.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BookRepositoryImplTest {
 
-    @Autowired private TestEntityManager entityManager;
-    @Autowired private BookRepository repository;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
-    private Book addNewBook() {
-        Set<Genre> genres = new HashSet<>();
-        genres.add(new Genre("Genre1"));
-        genres.add(new Genre("Genre2"));
-        Set<Author> authors = new HashSet<>();
-        authors.add(new Author("Surname", "Name"));
-        authors.add(new Author("Surname2", "Name2"));
-        return new Book("Test book", 1000, authors, genres);
+    @Autowired
+    private BookRepositoryCustom bookRepositoryCustom;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Test
+    public void aTest() {
+        DBObject objectToSave = BasicDBObjectBuilder.start().add("key", "value").get();
+        mongoTemplate.save(objectToSave, "collection");
+        assertThat(mongoTemplate.findAll(DBObject.class, "collection")).extracting("key").containsOnly("value");
     }
 
     @Test
-    public void getAllBooks() {
-        Book newBook = addNewBook();
-        entityManager.persist(newBook);
-
-        List<Book> books = repository.findAll();
-        assertThat(books.get(0).getName()).isEqualTo("Восточный экспресс");
-        assertThat(books.get(1).getPages()).isEqualTo(700);
+    @BeforeEach
+    public void bTestNewBook() {
+        Book testBook = bookRepository.findBookByName("Test Book");
+        if (testBook != null) {
+            bookRepositoryCustom.deleteBook(testBook.getDatabaseId());
+        }
+        bookRepositoryCustom.saveNewBook(new Book("Test Book", 999));
+        testBook = bookRepository.findBookByName("Test Book");
+        assertThat(testBook.getPages()).isEqualTo(999);
     }
 
     @Test
-    public void findBookById() {
-        Book book = repository.findBookById(3L);
-        assertThat(book.getName()).isEqualTo("Координаты чудес света");
+    public void testNewAuthor() {
+        Book testBook = bookRepository.findBookByName("Test Book");
+
+        Author testAuthor = new Author("Test", "Author");
+        bookRepositoryCustom.saveNewAuthor(testBook.getDatabaseId(), testAuthor);
+        testBook = bookRepositoryCustom.findBookByAuthorSurname("Test");
+        assertThat(testBook.getPages()).isEqualTo(999);
+        bookRepositoryCustom.deleteAuthor(testBook.getDatabaseId(), testAuthor);
+        testBook = bookRepositoryCustom.findBookByAuthorSurname("Test");
+        assertThat(testBook).isNull();
     }
 
     @Test
-    public void getAverageMarkByBook() {
-        Book newBook = addNewBook();
-        entityManager.persist(newBook);
+    public void testNewGenre() {
+        Book testBook = bookRepository.findBookByName("Test Book");
 
-        Book book = repository.findBookByName("Test book");
-        Double mark = repository.getAverageMarkByBook(book.getId());
-        assertThat(mark).isEqualTo(null);
-
-        book = repository.findBookByName("Восточный экспресс");
-        mark = repository.getAverageMarkByBook(book.getId());
-        assertThat(mark).isEqualTo(5.5);
+        Genre testGenre = new Genre("Test Genre");
+        bookRepositoryCustom.saveNewGenre(testBook.getDatabaseId(), testGenre);
+        testBook = bookRepository.findBookByGenres(testGenre);
+        assertThat(testBook.getPages()).isEqualTo(999);
+        bookRepositoryCustom.deleteGenre(testBook.getDatabaseId(), testGenre);
+        testBook = bookRepository.findBookByGenres(testGenre);
+        assertThat(testBook).isNull();
     }
 
     @Test
-    public void getAllCommentsByBook() {
-        List<Book> books = repository.getAllCommentsByBook("ост");
-        assertThat(books.get(0).getComments().size()).isEqualTo(2);
-    }
+    public void testNewComment() {
+        Book testBook = bookRepository.findBookByName("Test Book");
 
-    @Test
-    public void save() {
-        Book newBook = addNewBook();
-
-        repository.save(newBook);
-        Book book = repository.findBookByName("Test book");
-        assertThat(book.getName()).isEqualTo("Test book");
-    }
-
-    @Test
-    public void deleteById() {
-        Book newBook = addNewBook();
-        entityManager.persist(newBook);
-
-        Book book = repository.findBookByName("Test book");
-        assertThat(book.getName()).isEqualTo("Test book");
-
-        repository.deleteById(book.getId());
-        book = repository.findBookByName("Test book");
-        assertThat(book).isEqualTo(null);
+        Comment testComment = new Comment((byte) 6, "TestUser", "TestComment", new Date());
+        bookRepositoryCustom.saveNewComment(testBook.getDatabaseId(), testComment);
+        testBook = bookRepository.findBookByComments(testComment);
+        assertThat(testBook.getPages()).isEqualTo(999);
+        bookRepositoryCustom.deleteComment(testBook.getDatabaseId(), testComment);
+        testBook = bookRepository.findBookByComments(testComment);
+        assertThat(testBook).isNull();
     }
 }

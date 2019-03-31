@@ -7,11 +7,12 @@ import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ResultsPrinter {
-    Table printAuthors(List<Author> list);
-    Table printGenres(List<Genre> list);
-    Table printComments(List<Comment> list);
+    Table printAuthors(Set<Author> list);
+    Table printGenres(Set<Genre> list);
+    Table printComments(Set<Comment> list);
     Table printBooks(List<Book> list);
     Table printBookComments(List<Book> list);
 }

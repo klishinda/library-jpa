@@ -1,50 +1,42 @@
 package ru.otus.homework.libraryService;
 
+import org.bson.types.ObjectId;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
 import java.util.List;
+import java.util.Set;
 
 public interface LibraryService {
-    List<Author> getUnusedAuthors();
+    Set<Author> getAuthorByName(String name);
 
-    Author getAuthorById(Long id);
+    Set<Author> getAllAuthors();
 
-    List<Author> getAllAuthors();
+    void addAuthor(ObjectId bookId, Author author);
 
-    void addAuthor(Author author);
+    void removeAuthor(ObjectId bookId, Author author);
 
-    void removeAuthor(Long id);
+    Set<Genre> getAllGenres();
 
-    Genre getGenreById(Long id);
+    void addGenre(ObjectId bookId, Genre genre);
 
-    List<Genre> getAllGenres();
+    void removeGenre(ObjectId bookId, Genre genre);
 
-    void addGenre(Genre genre);
+    Set<Comment> getAllComments();
 
-    void removeGenre(Long id);
+    void addComment(ObjectId bookId, Comment comment);
 
-    Comment getCommentById(Long id);
-
-    List<Comment> getAllComments();
-
-    List<Comment> getCommentsByMark(byte mark);
-
-    void addComment(Comment comment);
-
-    void removeComment(Long id);
-
-    Book getBookById(Long id);
+    void removeComment(ObjectId bookId, Comment comment);
 
     List<Book> getAllBooks();
 
-    void addBook(String title, int pages, List<Long> idAuthors, List<Long> idGenres);
+    void addBook(String title, int pages);
 
-    void removeBook(Long id);
+    void removeBook(ObjectId id);
 
-    Double getAverageMarkByBook(Long id);
+    Double getAverageMarkByBook(ObjectId id);
 
     List<Book> getAllCommentsByBook(String name);
 }

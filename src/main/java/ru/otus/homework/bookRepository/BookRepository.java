@@ -1,18 +1,15 @@
 package ru.otus.homework.bookRepository;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import ru.otus.homework.model.Book;
+import ru.otus.homework.model.Comment;
+import ru.otus.homework.model.Genre;
 
 import java.util.List;
 
-public interface BookRepository extends CrudRepository<Book, Long> {
-    Book findBookById(Long id);
+public interface BookRepository extends MongoRepository<Book, Long> {
     List<Book> findAll();
-    @Query(value = "select AVG(c.mark) from book_comments c LEFT JOIN books b ON  b.id = c.id_book WHERE b.id = :id", nativeQuery = true)
-    Double getAverageMarkByBook(@Param("id") Long id);
-    @Query(value = "select b from Book b WHERE b.name LIKE %:name%")
-    List<Book> getAllCommentsByBook(@Param("name") String bookName);
-    Book findBookByName(String bookName);
+    Book findBookByName(String name);
+    Book findBookByGenres(Genre genre);
+    Book findBookByComments(Comment comment);
 }
