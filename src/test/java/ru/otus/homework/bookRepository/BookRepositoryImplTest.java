@@ -29,9 +29,6 @@ public class BookRepositoryImplTest {
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private BookRepositoryCustom bookRepositoryCustom;
-
-    @Autowired
     private BookRepository bookRepository;
 
     @Test
@@ -46,9 +43,9 @@ public class BookRepositoryImplTest {
     public void bTestNewBook() {
         Book testBook = bookRepository.findBookByName("Test Book");
         if (testBook != null) {
-            bookRepositoryCustom.deleteBook(testBook.getDatabaseId());
+            bookRepository.removeBookByDatabaseId(testBook.getDatabaseId());
         }
-        bookRepositoryCustom.saveNewBook(new Book("Test Book", 999));
+        bookRepository.saveNewBook(new Book("Test Book", 999));
         testBook = bookRepository.findBookByName("Test Book");
         assertThat(testBook.getPages()).isEqualTo(999);
     }
@@ -58,11 +55,11 @@ public class BookRepositoryImplTest {
         Book testBook = bookRepository.findBookByName("Test Book");
 
         Author testAuthor = new Author("Test", "Author");
-        bookRepositoryCustom.saveNewAuthor(testBook.getDatabaseId(), testAuthor);
-        testBook = bookRepositoryCustom.findBookByAuthorSurname("Test");
+        bookRepository.saveNewAuthor(testBook.getDatabaseId(), testAuthor);
+        testBook = bookRepository.findBookByAuthorSurname("Test");
         assertThat(testBook.getPages()).isEqualTo(999);
-        bookRepositoryCustom.deleteAuthor(testBook.getDatabaseId(), testAuthor);
-        testBook = bookRepositoryCustom.findBookByAuthorSurname("Test");
+        bookRepository.deleteAuthor(testBook.getDatabaseId(), testAuthor);
+        testBook = bookRepository.findBookByAuthorSurname("Test");
         assertThat(testBook).isNull();
     }
 
@@ -71,10 +68,10 @@ public class BookRepositoryImplTest {
         Book testBook = bookRepository.findBookByName("Test Book");
 
         Genre testGenre = new Genre("Test Genre");
-        bookRepositoryCustom.saveNewGenre(testBook.getDatabaseId(), testGenre);
+        bookRepository.saveNewGenre(testBook.getDatabaseId(), testGenre);
         testBook = bookRepository.findBookByGenres(testGenre);
         assertThat(testBook.getPages()).isEqualTo(999);
-        bookRepositoryCustom.deleteGenre(testBook.getDatabaseId(), testGenre);
+        bookRepository.deleteGenre(testBook.getDatabaseId(), testGenre);
         testBook = bookRepository.findBookByGenres(testGenre);
         assertThat(testBook).isNull();
     }
@@ -84,10 +81,10 @@ public class BookRepositoryImplTest {
         Book testBook = bookRepository.findBookByName("Test Book");
 
         Comment testComment = new Comment((byte) 6, "TestUser", "TestComment", new Date());
-        bookRepositoryCustom.saveNewComment(testBook.getDatabaseId(), testComment);
+        bookRepository.saveNewComment(testBook.getDatabaseId(), testComment);
         testBook = bookRepository.findBookByComments(testComment);
         assertThat(testBook.getPages()).isEqualTo(999);
-        bookRepositoryCustom.deleteComment(testBook.getDatabaseId(), testComment);
+        bookRepository.deleteComment(testBook.getDatabaseId(), testComment);
         testBook = bookRepository.findBookByComments(testComment);
         assertThat(testBook).isNull();
     }
