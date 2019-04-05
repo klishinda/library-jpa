@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>List of all books</title>
+        <style type="text/css">
+            body {
+                padding: 50px;
+            }
+
+            .books, .books td {
+                border: 1px solid lightgray;
+                padding: 5px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>BOOKS:</h1>
+
+        <table class="books">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Название</th>
+                <th>Количество страниц</th>
+                <th>Авторы</th>
+                <th>Жанры</th>
+                <th>Правка</th>
+                <th>Удаление</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td th:text="${book.databaseId}">0</td>
+                <td th:text="${book.name}">Default book</td>
+                <td th:text="${book.pages}">0</td>
+                <td>
+                    <table>
+                        <tbody>
+                        <tr th:each="author : ${book.authors}">
+                            <td th:text="${author.name + ' ' + author.surname}"> - </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tbody>
+                        <tr th:each="genre : ${book.genres}">
+                            <td th:text="${genre.name}"> - </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td>
+                    <a th:href="@{/update-book(id=${book.databaseId})}" href="update-book.html">Edit</a>
+                </td>
+                <td>
+                    <a th:href="@{/delete-book(id=${book.databaseId})}" href="delete-book.html">Remove</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

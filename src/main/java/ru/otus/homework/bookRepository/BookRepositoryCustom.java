@@ -21,7 +21,6 @@ public interface BookRepositoryCustom {
     void saveNewComment(ObjectId bookId, Comment comment);
     void deleteComment(ObjectId bookId, Comment comment);
 
-
-    void deleteBook(ObjectId bookId);
     void saveNewBook(Book book);
+    void updateBook(Book book);
 }

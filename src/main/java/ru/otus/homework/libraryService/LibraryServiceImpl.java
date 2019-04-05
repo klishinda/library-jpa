@@ -3,7 +3,6 @@ package ru.otus.homework.libraryService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.otus.homework.bookRepository.BookRepositoryCustom;
 import ru.otus.homework.bookRepository.BookRepository;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
@@ -16,17 +15,15 @@ import java.util.Set;
 @Component
 public class LibraryServiceImpl implements LibraryService{
     private BookRepository bookRepository;
-    private ru.otus.homework.bookRepository.BookRepositoryCustom bookRepositoryCustom;
 
     @Autowired
-    public LibraryServiceImpl( BookRepository bookRepository, BookRepositoryCustom bookRepositoryCustom) {
+    public LibraryServiceImpl( BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.bookRepositoryCustom = bookRepositoryCustom;
     }
 
     @Override
     public Set<Author> getAuthorByName(String surname) {
-        return bookRepositoryCustom.findBookByAuthorSurname(surname).getAuthors();
+        return bookRepository.findBookByAuthorSurname(surname).getAuthors();
     }
 
     @Override
@@ -47,12 +44,12 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public void addAuthor(ObjectId bookId, Author author) {
-        bookRepositoryCustom.saveNewAuthor(bookId, author);
+        bookRepository.saveNewAuthor(bookId, author);
     }
 
     @Override
     public void removeAuthor(ObjectId bookId, Author author) {
-        bookRepositoryCustom.deleteAuthor(bookId, author);
+        bookRepository.deleteAuthor(bookId, author);
     }
 
     @Override
@@ -73,12 +70,12 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public void addGenre(ObjectId bookId, Genre genre) {
-        bookRepositoryCustom.saveNewGenre(bookId, genre);
+        bookRepository.saveNewGenre(bookId, genre);
     }
 
     @Override
     public void removeGenre(ObjectId bookId, Genre genre) {
-        bookRepositoryCustom.deleteGenre(bookId, genre);
+        bookRepository.deleteGenre(bookId, genre);
     }
 
     @Override
@@ -99,12 +96,12 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public void addComment(ObjectId bookId, Comment comment) {
-        bookRepositoryCustom.saveNewComment(bookId, comment);
+        bookRepository.saveNewComment(bookId, comment);
     }
 
     @Override
     public void removeComment(ObjectId bookId, Comment comment) {
-        bookRepositoryCustom.deleteComment(bookId, comment);
+        bookRepository.deleteComment(bookId, comment);
     }
 
     @Override
@@ -115,17 +112,17 @@ public class LibraryServiceImpl implements LibraryService{
     @Override
     public void addBook(String title, int pages) {
         Book book = new Book(title, pages);
-        bookRepositoryCustom.saveNewBook(book);
+        bookRepository.saveNewBook(book);
     }
 
     @Override
     public void removeBook(ObjectId id) {
-        bookRepositoryCustom.deleteBook(id);
+        bookRepository.removeBookByDatabaseId(id);
     }
 
     @Override
     public Double getAverageMarkByBook(ObjectId id) {
-        Double mark = bookRepositoryCustom.getAverageMarkByBook(id);
+        Double mark = bookRepository.getAverageMarkByBook(id);
         if (mark == null) {
             return (double) 0;
         }
@@ -136,6 +133,21 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public List<Book> getAllCommentsByBook(String name) {
-        return bookRepositoryCustom.findCommentsByBook(name);
+        return bookRepository.findCommentsByBook(name);
+    }
+
+    @Override
+    public Book getBookByName(String name) {
+        return bookRepository.findBookByName(name);
+    }
+
+    @Override
+    public Book getBookById(ObjectId id) {
+        return bookRepository.findBookByDatabaseId(id);
+    }
+
+    @Override
+    public void updateBook(Book book) {
+        bookRepository.updateBook(book);
     }
 }

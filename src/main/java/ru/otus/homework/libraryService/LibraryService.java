@@ -39,4 +39,10 @@ public interface LibraryService {
     Double getAverageMarkByBook(ObjectId id);
 
     List<Book> getAllCommentsByBook(String name);
+
+    Book getBookByName(String name);
+
+    Book getBookById(ObjectId id);
+
+    void updateBook(Book book);
 }

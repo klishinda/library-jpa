@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.homework.model.Author;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-
-//import org.springframework.data.mongodb.repository.Query;
 
 @Repository
 @Transactional
@@ -133,9 +132,13 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
     }
 
     @Override
-    public void deleteBook(ObjectId bookId) {
-        Query query = new Query(Criteria.where("_id").is(bookId));
-        mongoTemplate.findAndRemove(query, Book.class);
+    public void updateBook(Book book) {
+        Query query = new Query(Criteria.where("_id").is(book.getDatabaseId()));
+        Update update = new Update();
+        update.set("name", book.getName());
+        update.set("pages", book.getPages());
+
+        mongoTemplate.updateFirst(query, update, Book.class);
     }
 
     private Book getBookById(ObjectId bookId) {
