@@ -13,6 +13,7 @@
                 padding: 5px;
             }
         </style>
+        <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
     </head>
 
     <body>
@@ -20,38 +21,62 @@
 
         <table class="comments">
             <thead>
-            <tr>
-                <th>Название книги</th>
-                <th>Отзывы</th>
-            </tr>
+                <tr>
+                    <th>Оценка</th>
+                    <th>Пользователь</th>
+                    <th>Комментарий</th>
+                    <th>Дата комментария</th>
+                </tr>
             </thead>
 
             <tbody>
-            <tr th:each="book : ${books}">
-                <td th:text="${book.name}">Default book</td>
-                <td>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Оценка</th>
-                            <th>Пользователь</th>
-                            <th>Комментарий</th>
-                            <th>Дата комментария</th>
-                        </tr>
-                        </thead>
 
-                        <tbody>
-                        <tr th:each="comment : ${book.comments}">
-                            <td th:text="${comment.mark}"> 0 </td>
-                            <td th:text="${comment.userName}"> - </td>
-                            <td th:text="${comment.comment}"> - </td>
-                            <td th:text="${comment.createDate}"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
             </tbody>
+
+            <script>
+                $(function () {
+
+                    /*var names = $('#names').val();
+
+                    $.get('/api/all-comments-by-book', {name: names}).done(function (books) {
+                        books.forEach(function (book) {
+                            book.comments.forEach(function (comment) {
+                                $('tbody').append(`
+                                    <tr>
+                                        <td>${book.name}</td>
+                                        <td>${comment.mark}</td>
+                                        <td>${comment.userName}</td>
+                                        <td>${comment.comment}</td>
+                                        <td>${comment.createDate}</td>
+                                    </tr>
+                                `)
+                            });
+                        });
+                    })*/
+                });
+
+                $.ajax({
+                        url: "/api/all-comments-by-book",
+                        type: "GET",
+                        //data: "name=" + $('#name').val(),
+                        data: "name=" + "о",
+                        success: function(books) {
+                            books.forEach(function (book) {
+                                                        book.comments.forEach(function (comment) {
+                                                            $('tbody').append(`
+                                                                <tr>
+                                                                    <td>${book.name}</td>
+                                                                    <td>${comment.mark}</td>
+                                                                    <td>${comment.userName}</td>
+                                                                    <td>${comment.comment}</td>
+                                                                    <td>${comment.createDate}</td>
+                                                                </tr>
+                                                            `)
+                                                        });
+                                                    });
+                        }
+                    });
+            </script>
         </table>
     </body>
 </html>

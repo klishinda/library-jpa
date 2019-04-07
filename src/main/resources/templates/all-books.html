@@ -12,6 +12,16 @@
                 border: 1px solid lightgray;
                 padding: 5px;
             }
+
+            .list-of-other-refs td {
+                border: 2px solid lightgray;
+                padding: 2px;
+            }
+
+            .list-of-actions td {
+                border: 2px solid lightgray;
+                padding: 2px;
+            }
         </style>
     </head>
 
@@ -61,6 +71,66 @@
                     <a th:href="@{/delete-book(id=${book.databaseId})}" href="delete-book.html">Remove</a>
                 </td>
             </tr>
+            </tbody>
+        </table>
+
+        <br/><br/>
+
+        <h2>OTHER LISTS:</h2>
+        <table class="list-of-other-refs">
+            <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Description</th>
+            </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <a th:href="@{/all-authors}" href="all-authors.html">all-authors</a>
+                    </td>
+                    <td>Get All Authors</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/all-genres}" href="all-genres.html">all-genres</a>
+                    </td>
+                    <td>Get All Genres</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/all-comments-by-book?name=о}" href="all-comments-by-book.html">all-comments</a>
+                    </td>
+                    <td>Get All Comments By Book. By default using russian letter "о" for parameter</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br/><br/>
+
+        <h2>OTHER ACTIONS:</h2>
+        <table class="list-of-actions">
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <a th:href="@{/add-book}" href="add-book.html">add-book</a>
+                    </td>
+                    <td>Add New Book</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/initialization}" href="initiate-database.html">initiate-database</a>
+                    </td>
+                    <td>Add Test Data</td>
+                </tr>
             </tbody>
         </table>
     </body>
