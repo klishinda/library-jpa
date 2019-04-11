@@ -3,13 +3,26 @@
     <head>
         <title>Adding Book</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
     </head>
     <body>
         <h1>Add New Book</h1>
         <form action="#" th:action="@{/add-book}" method="post">
-            <p>Book name: <input type="text" th:field="${book.name}"/></p>
-            <p>Number of pages: <input type="number" th:field="${book.pages}"/></p>
-            <p><input type="submit" value="Submit" /></p>
+            <p>Book name: <input id="name-input" type="text" th:field="${book.name}"/></p>
+            <p>Number of pages: <input id="pages-input" type="number" th:field="${book.pages}"/></p>
+            <p><input id="save-button" type="submit" value="Submit" /></p>
         </form>
     </body>
+
+    <script>
+        $('#save-button').click(function() {
+            $.ajax({
+                url: "/api/books",
+                type: "POST",
+                data: "name=" + $('#name-input').val() + "&pages=" + $('#pages-input').val(),
+                success: function() {
+                }
+            });
+        });
+    </script>
 </html>

@@ -63,10 +63,15 @@ public class LibraryPageController {
 
     @GetMapping("/all-comments-by-book")
     public String listCommentByBookName(@RequestParam("name") String name, Model model) {
-        List<Book> books = libraryService.getAllCommentsByBook(name);
-        //model.addAttribute("books", books);
-        //model.addAttribute("name", name);
+        model.addAttribute("name", name);
         return "all-comments-by-book";
+    }
+
+    @GetMapping("/comments-by-book-id")
+    public String listCommentByBookId(@RequestParam("id") ObjectId id, Model model) {
+        Book book = libraryService.getBookById(id);
+        model.addAttribute("comments", book.getComments());
+        return "all-comments-by-book-id";
     }
 
     ////////////////////////// CREATE
@@ -78,7 +83,6 @@ public class LibraryPageController {
 
     @PostMapping("/add-book")
     public String addBook(@ModelAttribute Book book) {
-        libraryService.addBook(book.getName(), book.getPages());
         return "result-add-book";
     }
 
@@ -91,9 +95,8 @@ public class LibraryPageController {
         return "update-book";
     }
 
-    @PostMapping("/update-book")
+    @PutMapping("/update-book")
     public String updateBook(@RequestParam("id") ObjectId id, @ModelAttribute Book book) {
-        libraryService.updateBook(book);
         return "result-update-book";
     }
 
@@ -105,9 +108,8 @@ public class LibraryPageController {
         return "delete-book";
     }
 
-    @PostMapping("/delete-book")
+    @DeleteMapping("/delete-book")
     public String deleteBook(@RequestParam("id") ObjectId id, @ModelAttribute Book book) {
-        libraryService.removeBook(id);
         return "result-delete-book";
     }
 }

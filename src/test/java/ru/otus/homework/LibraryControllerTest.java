@@ -17,8 +17,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(LibraryPageController.class)
-public class LibraryPageControllerTest {
+@WebMvcTest(LibraryController.class)
+public class LibraryControllerTest {
     @Autowired
     private MockMvc mvc;
 
@@ -31,23 +31,26 @@ public class LibraryPageControllerTest {
     @MockBean
     private BookRepository bookRepository;
 
+    @MockBean
+    private LibraryController libraryController;
+
     @Test
     public void listBook() throws Exception {
-        this.mvc.perform(get("/").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk());
+        this.mvc.perform(get("/api/books").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
     }
 
     @Test
     public void addBook() throws Exception {
-        this.mvc.perform(get("/add-book").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk());
+        this.mvc.perform(post("/api/books").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
     }
 
     @Test
     public void updateBook() throws Exception {
-        this.mvc.perform(post("/update-book?id=5c8026306856e041c436319a&name=TEST&pages=44").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk());
+        this.mvc.perform(put("/api/books").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
     }
 
     @Test
     public void deleteBook() throws Exception {
-        this.mvc.perform(post("/delete-book?id=5c8026306856e041c436319a").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk());
+        this.mvc.perform(delete("/api/books/id=5cafaa770785e70520f498f8").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
     }
 }
