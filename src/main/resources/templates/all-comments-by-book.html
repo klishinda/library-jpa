@@ -37,9 +37,8 @@
                 var nameParameter = url.searchParams.get("name");
 
                 $.ajax({
-                        url: "/api/all-comments-by-book",
+                        url: "/api/books/"+ encodeURIComponent(nameParameter) +"/book-comments",
                         type: "GET",
-                        data: "name=" + encodeURIComponent(nameParameter),
                         success: function(books) {
                             var bookContent = "";
                             books.forEach(function (book) {

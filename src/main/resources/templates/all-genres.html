@@ -30,7 +30,7 @@
         </table>
         <script>
             $(function () {
-                $.get('/api/all-genres').done(function (genres) {
+                $.get('/api/genres').done(function (genres) {
                     genres.forEach(function (genre) {
                         $('tbody').append(`
                             <tr>

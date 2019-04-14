@@ -31,7 +31,7 @@
         </table>
         <script>
             $(function () {
-                $.get('/api/all-authors').done(function (authors) {
+                $.get('/api/authors').done(function (authors) {
                     authors.forEach(function (author) {
                         $('tbody').append(`
                         <tr>

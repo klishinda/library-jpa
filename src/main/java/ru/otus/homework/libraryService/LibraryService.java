@@ -32,7 +32,7 @@ public interface LibraryService {
 
     List<Book> getAllBooks();
 
-    void addBook(String title, int pages);
+    void addBook(String title, int pages, Set<Author> authors, Set<Genre> genres);
 
     void removeBook(ObjectId id);
 

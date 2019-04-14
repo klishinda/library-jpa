@@ -42,16 +42,20 @@ public class MongoServiceImpl implements MongoService {
                 if (file.isFile()) {
                     log.info("Reading file " + folder + "/" + file.getName());
                 }
-                BufferedReader br = new BufferedReader(new FileReader(folder + "/" + file.getName()));
-                String st;
-                StringBuilder authors = new StringBuilder();
-                while ((st = br.readLine()) != null) {
-                    authors.append(st);
-                }
-
-                Document doc = Document.parse(authors.toString());
+                Document doc = ReadTestDataJsons(folder, file);
                 mongoTemplate.insert(doc, COLLECTION);
             }
         }
+    }
+
+    public static Document ReadTestDataJsons(File folder, File file) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(folder + "/" + file.getName()));
+        String st;
+        StringBuilder authors = new StringBuilder();
+        while ((st = br.readLine()) != null) {
+            authors.append(st);
+        }
+
+        return Document.parse(authors.toString());
     }
 }

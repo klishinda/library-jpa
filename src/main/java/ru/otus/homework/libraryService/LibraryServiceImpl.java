@@ -110,8 +110,8 @@ public class LibraryServiceImpl implements LibraryService{
     }
 
     @Override
-    public void addBook(String title, int pages) {
-        Book book = new Book(title, pages);
+    public void addBook(String title, int pages, Set<Author> authors, Set<Genre> genres) {
+        Book book = new Book(title, pages, authors, genres);
         bookRepository.saveNewBook(book);
     }
 

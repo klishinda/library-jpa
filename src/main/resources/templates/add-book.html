@@ -8,19 +8,31 @@
     <body>
         <h1>Add New Book</h1>
         <form action="#" th:action="@{/add-book}" method="post">
-            <p>Book name: <input id="name-input" type="text" th:field="${book.name}"/></p>
-            <p>Number of pages: <input id="pages-input" type="number" th:field="${book.pages}"/></p>
+            <p>Book name: <input id="name-input" type="text"/></p>
+            <p>Number of pages: <input id="pages-input" type="number"/></p>
+            <p>Author name: <input id="author-name-input" type="text"/></p>
+            <p>Author surname: <input id="author-surname-input" type="text"/></p>
+            <p>Genre name: <input id="genre-name-input" type="text"/></p>
             <p><input id="save-button" type="submit" value="Submit" /></p>
         </form>
     </body>
 
     <script>
         $('#save-button').click(function() {
+            var book = {
+                    "name": $('#name-input').val(),
+                    "pages": $('#pages-input').val(),
+                    "authors":[{"name":$("#author-name-input").val(), "surname":$("#author-surname-input").val()}],
+                    "genres":[{"name":$("#genre-name-input").val()}]
+            };
+
             $.ajax({
-                url: "/api/books",
-                type: "POST",
-                data: "name=" + $('#name-input').val() + "&pages=" + $('#pages-input').val(),
-                success: function() {
+                url: '/api/books',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(book),
+                contentType: 'application/json',
+                success: function () {
                 }
             });
         });

@@ -103,11 +103,11 @@ public class ShellCommands {
         return printer.printBookComments(libraryService.getAllCommentsByBook(name));
     }
 
-    @ShellMethod("Add book")
+    /*@ShellMethod("Add book")
     private void addBook(@ShellOption String name,
                          @ShellOption int pages) {
         libraryService.addBook(name, pages);
-    }
+    }*/
 
     @ShellMethod("Remove book")
     private void deleteBook(@ShellOption ObjectId id) {
