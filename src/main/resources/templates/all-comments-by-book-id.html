@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Comments</title>
+        <style type="text/css">
+            body {
+                padding: 50px;
+            }
+
+            .comments, .comments td {
+                border: 1px solid lightgray;
+                padding: 5px;
+            }
+        </style>
+        <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <h1>Comments:</h1>
+
+        <table class="comments">
+            <thead>
+                <tr>
+                    <th>Оценка</th>
+                    <th>Пользователь</th>
+                    <th>Комментарий</th>
+                    <th>Дата комментария</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+        </table>
+
+        <script>
+            var urlString = window.location.href;
+            var url = new URL(urlString);
+            var nameParameter = url.searchParams.get("id");
+
+            $(function () {
+                $.get('/api/books/' + nameParameter + '/comments').done(function (comments) {
+                    comments.forEach(function (comments) {
+                        $('tbody').append(`
+                            <tr>
+                                <td>${comments.mark}</td>
+                                <td>${comments.userName}</td>
+                                <td>${comments.comment}</td>
+                                <td>${comments.createDate}</td>
+                            </tr>
+                        `)
+                    });
+                })
+            });
+        </script>
+    </body>
+</html>

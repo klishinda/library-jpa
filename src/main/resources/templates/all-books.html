@@ -12,55 +12,138 @@
                 border: 1px solid lightgray;
                 padding: 5px;
             }
+
+            .list-of-other-refs td {
+                border: 2px solid lightgray;
+                padding: 2px;
+            }
+
+            .list-of-actions td {
+                border: 2px solid lightgray;
+                padding: 2px;
+            }
         </style>
+        <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
     </head>
 
     <body>
         <h1>BOOKS:</h1>
 
-        <table class="books">
+        <table class="books" id="table-books">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Количество страниц</th>
+                    <th>Авторы</th>
+                    <th>Жанры</th>
+                    <th>Правка</th>
+                    <th>Удаление</th>
+                    <th>Просмотр комментариев</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+            <script>
+                $(function () {
+                    $.get('/api/books').done(function (books) {
+                        var bookContent = "";
+                        books.forEach(function (book) {
+                            var bookId = `${book.databaseId}`;
+                            bookContent += '<tr>';
+                            bookContent += '<td>' + bookId + '</td>';
+                            bookContent += '<td>' + `${book.name}` + '</td>';
+                            bookContent += '<td>' + `${book.pages}` + '</td>';
+                            bookContent += '<td><table><tbody>';
+                            if (book.authors) {
+                                book.authors.forEach(function (author) {
+                                                                bookContent += '<tr>';
+                                                                bookContent += '<td>' + `${author.name}` + ' ' + `${author.surname}` + '</td>';
+                                                                bookContent += '</tr>';
+                                                            });
+                            }
+                            bookContent += '</tbody></table></td>';
+                            bookContent += '<td><table><tbody>';
+                            if (book.genres) {
+                                book.genres.forEach(function (genre) {
+                                    bookContent += '<tr>';
+                                    bookContent += '<td>' + `${genre.name}` + '</td>';
+                                    bookContent += '</tr>';
+                                });
+                            }
+                            bookContent += '</tbody></table></td>';
+                            bookContent += '<td><a href = /update-book?id=' + bookId + '>Update</a></td>';
+                            bookContent += '<td><a href = /delete-book?id=' + bookId + '>Remove</a></td>';
+                            bookContent += '<td><a href = /comments-by-book-id?id=' + bookId + '>Comments</a></td>';
+                            bookContent += '</tr>';
+                        });
+                        $('#table-books tbody').append(bookContent);
+                    });
+
+                });
+            </script>
+        </table>
+
+        <br/><br/>
+
+        <h2>OTHER LISTS:</h2>
+        <table class="list-of-other-refs">
             <thead>
             <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Количество страниц</th>
-                <th>Авторы</th>
-                <th>Жанры</th>
-                <th>Правка</th>
-                <th>Удаление</th>
+                <th>Reference</th>
+                <th>Description</th>
             </tr>
             </thead>
 
             <tbody>
-            <tr th:each="book : ${books}">
-                <td th:text="${book.databaseId}">0</td>
-                <td th:text="${book.name}">Default book</td>
-                <td th:text="${book.pages}">0</td>
-                <td>
-                    <table>
-                        <tbody>
-                        <tr th:each="author : ${book.authors}">
-                            <td th:text="${author.name + ' ' + author.surname}"> - </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-                <td>
-                    <table>
-                        <tbody>
-                        <tr th:each="genre : ${book.genres}">
-                            <td th:text="${genre.name}"> - </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-                <td>
-                    <a th:href="@{/update-book(id=${book.databaseId})}" href="update-book.html">Edit</a>
-                </td>
-                <td>
-                    <a th:href="@{/delete-book(id=${book.databaseId})}" href="delete-book.html">Remove</a>
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/all-authors}" href="all-authors.html">all-authors</a>
+                    </td>
+                    <td>Get All Authors</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/all-genres}" href="all-genres.html">all-genres</a>
+                    </td>
+                    <td>Get All Genres</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/all-comments-by-book?name=о}" href="all-comments-by-book.html">all-comments</a>
+                    </td>
+                    <td>Get All Comments By Book. By default using russian letter "о" for parameter</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br/><br/>
+
+        <h2>OTHER ACTIONS:</h2>
+        <table class="list-of-actions">
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <a th:href="@{/add-book}" href="add-book.html">add-book</a>
+                    </td>
+                    <td>Add New Book</td>
+                </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/initialization}" href="initiate-database.html">initiate-database</a>
+                    </td>
+                    <td>Refresh Test Data</td>
+                </tr>
             </tbody>
         </table>
     </body>

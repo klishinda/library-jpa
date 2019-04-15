@@ -4,25 +4,39 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.otus.homework.libraryService.LibraryService;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Genre;
+import ru.otus.homework.mongoService.MongoService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 @Controller
-public class LibraryController {
+public class LibraryPageController {
     private final LibraryService libraryService;
+    private final MongoService mongoService;
 
     @Autowired
-    public LibraryController(LibraryService libraryService) {
+    public LibraryPageController(LibraryService libraryService, MongoService mongoService) {
         this.libraryService = libraryService;
+        this.mongoService = mongoService;
+    }
+
+    ////////////////////////// CREATE AND FILL DATABASE
+    @GetMapping("/initialization")
+    public String initiateDatabaseGet() {
+        return "initiate-database";
+    }
+
+    @PostMapping("/initialization")
+    public String initiateDatabasePost() throws IOException {
+        mongoService.createCollection();
+        mongoService.addTestData();
+        return "result-initiate-database";
     }
 
     ////////////////////////// READ
@@ -49,9 +63,15 @@ public class LibraryController {
 
     @GetMapping("/all-comments-by-book")
     public String listCommentByBookName(@RequestParam("name") String name, Model model) {
-        List<Book> books = libraryService.getAllCommentsByBook(name);
-        model.addAttribute("books", books);
+        model.addAttribute("name", name);
         return "all-comments-by-book";
+    }
+
+    @GetMapping("/comments-by-book-id")
+    public String listCommentByBookId(@RequestParam("id") ObjectId id, Model model) {
+        Book book = libraryService.getBookById(id);
+        model.addAttribute("comments", book.getComments());
+        return "all-comments-by-book-id";
     }
 
     ////////////////////////// CREATE
@@ -63,7 +83,6 @@ public class LibraryController {
 
     @PostMapping("/add-book")
     public String addBook(@ModelAttribute Book book) {
-        libraryService.addBook(book.getName(), book.getPages());
         return "result-add-book";
     }
 
@@ -76,9 +95,8 @@ public class LibraryController {
         return "update-book";
     }
 
-    @PostMapping("/update-book")
+    @PutMapping("/update-book")
     public String updateBook(@RequestParam("id") ObjectId id, @ModelAttribute Book book) {
-        libraryService.updateBook(book);
         return "result-update-book";
     }
 
@@ -90,9 +108,8 @@ public class LibraryController {
         return "delete-book";
     }
 
-    @PostMapping("/delete-book")
+    @DeleteMapping("/delete-book")
     public String deleteBook(@RequestParam("id") ObjectId id, @ModelAttribute Book book) {
-        libraryService.removeBook(id);
         return "result-delete-book";
     }
 }

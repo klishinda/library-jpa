@@ -13,6 +13,7 @@
                 padding: 5px;
             }
         </style>
+        <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
     </head>
 
     <body>
@@ -20,38 +21,46 @@
 
         <table class="comments">
             <thead>
-            <tr>
-                <th>Название книги</th>
-                <th>Отзывы</th>
-            </tr>
+                <tr>
+                    <th>Книга</th>
+                    <th>Комментарий</th>
+                </tr>
             </thead>
 
             <tbody>
-            <tr th:each="book : ${books}">
-                <td th:text="${book.name}">Default book</td>
-                <td>
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Оценка</th>
-                            <th>Пользователь</th>
-                            <th>Комментарий</th>
-                            <th>Дата комментария</th>
-                        </tr>
-                        </thead>
 
-                        <tbody>
-                        <tr th:each="comment : ${book.comments}">
-                            <td th:text="${comment.mark}"> 0 </td>
-                            <td th:text="${comment.userName}"> - </td>
-                            <td th:text="${comment.comment}"> - </td>
-                            <td th:text="${comment.createDate}"></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
             </tbody>
+
+            <script>
+                var urlString = window.location.href;
+                var url = new URL(urlString);
+                var nameParameter = url.searchParams.get("name");
+
+                $.ajax({
+                        url: "/api/books/"+ encodeURIComponent(nameParameter) +"/book-comments",
+                        type: "GET",
+                        success: function(books) {
+                            var bookContent = "";
+                            books.forEach(function (book) {
+                                bookContent += '<tr>';
+                                bookContent += '<td>' + `${book.name}` + '</td>';
+                                bookContent += '<td><table>';
+                                bookContent += '<thead><tr><th>Оценка</th><th>Пользователь</th><th>Комментарий</th><th>Дата комментария</th></tr></thead>';
+                                bookContent += '<tbody>';
+                                book.comments.forEach(function (comment) {
+                                    bookContent += '<tr>';
+                                    bookContent += '<td>' + `${comment.mark}` + '</td>';
+                                    bookContent += '<td>' + `${comment.userName}` + '</td>';
+                                    bookContent += '<td>' + `${comment.comment}` + '</td>';
+                                    bookContent += '<td>' + `${comment.createDate}` + '</td>';
+                                    bookContent += '</tr>';
+                                });
+                                bookContent += '</tbody></table></td></tr>';
+                            });
+                            $('tbody').append(bookContent);
+                        }
+                    });
+            </script>
         </table>
     </body>
 </html>

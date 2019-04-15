@@ -13,6 +13,7 @@
                 padding: 5px;
             }
         </style>
+        <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
     </head>
 
     <body>
@@ -20,17 +21,27 @@
 
         <table class="authors">
             <thead>
-            <tr>
-                <th>Имя</th>
-                <th>Фамилия</th>
-            </tr>
+                <tr>
+                    <th>Имя</th>
+                    <th>Фамилия</th>
+                </tr>
             </thead>
             <tbody>
-            <tr th:each="author : ${authors}">
-                <td th:text="${author.name}"> - </td>
-                <td th:text="${author.surname}"> - </td>
-            </tr>
             </tbody>
         </table>
+        <script>
+            $(function () {
+                $.get('/api/authors').done(function (authors) {
+                    authors.forEach(function (author) {
+                        $('tbody').append(`
+                        <tr>
+                            <td>${author.surname}</td>
+                            <td>${author.name}</td>
+                        </tr>
+                    `)
+                    });
+                })
+            });
+        </script>
     </body>
 </html>
