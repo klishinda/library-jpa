@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.homework.libraryService.LibraryService;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
@@ -12,6 +14,7 @@ import ru.otus.homework.model.Genre;
 import ru.otus.homework.mongoService.MongoService;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,21 +45,21 @@ public class LibraryPageController {
     ////////////////////////// READ
     @GetMapping("/")
     public String listBook(Model model) {
-        List<Book> books = libraryService.getAllBooks();
+        Flux<Book> books = libraryService.getAllBooks();
         model.addAttribute("books", books);
         return "all-books";
     }
 
     @GetMapping("/all-authors")
     public String listAuthor(Model model) {
-        Set<Author> authors = libraryService.getAllAuthors();
+        Flux<Author> authors = libraryService.getAllAuthors();
         model.addAttribute("authors", authors);
         return "all-authors";
     }
 
     @GetMapping("/all-genres")
     public String listGenre(Model model) {
-        Set<Genre> genres = libraryService.getAllGenres();
+        Flux<Genre> genres = libraryService.getAllGenres();
         model.addAttribute("genres", genres);
         return "all-genres";
     }
@@ -68,9 +71,7 @@ public class LibraryPageController {
     }
 
     @GetMapping("/comments-by-book-id")
-    public String listCommentByBookId(@RequestParam("id") ObjectId id, Model model) {
-        Book book = libraryService.getBookById(id);
-        model.addAttribute("comments", book.getComments());
+    public String listCommentByBookId(@RequestParam("id") ObjectId id) {
         return "all-comments-by-book-id";
     }
 
@@ -89,9 +90,8 @@ public class LibraryPageController {
     ////////////////////////// UPDATE
     @GetMapping("/update-book")
     public String updateBook(@RequestParam("id") ObjectId id, Model model) {
-        Book book = libraryService.getBookById(id);
+        Book book = libraryService.getBookById(id).block();
         model.addAttribute("currentBook", book);
-        model.addAttribute("newBook", new Book());
         return "update-book";
     }
 
@@ -103,7 +103,7 @@ public class LibraryPageController {
     ////////////////////////// DELETE
     @GetMapping("/delete-book")
     public String deleteBook(@RequestParam("id") ObjectId id, Model model) {
-        Book book = libraryService.getBookById(id);
+        Book book = libraryService.getBookById(id).block();
         model.addAttribute("book", book);
         return "delete-book";
     }

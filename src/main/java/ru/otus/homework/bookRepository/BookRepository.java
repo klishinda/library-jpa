@@ -1,34 +1,32 @@
 package ru.otus.homework.bookRepository;
 
+import com.mongodb.client.result.UpdateResult;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import ru.otus.homework.model.Author;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.homework.model.Book;
-import ru.otus.homework.model.Comment;
-import ru.otus.homework.model.Genre;
 
-import java.util.List;
+public interface BookRepository extends ReactiveMongoRepository<Book, Long>, BookRepositoryCustom {
+    Flux<Book> findAll();
+    /*Mono<Book> findBookByName(String name);
+    Mono<Book> findBookByGenres(Genre genre);
+    Mono<Book> findBookByComments(Comment comment);*/
+    Mono<Book> findBookByDatabaseId(ObjectId id);
+    Mono<Long> removeBookByDatabaseId(ObjectId id);
 
-public interface BookRepository extends MongoRepository<Book, Long>, BookRepositoryCustom {
-    List<Book> findAll();
-    Book findBookByName(String name);
-    Book findBookByGenres(Genre genre);
-    Book findBookByComments(Comment comment);
-    Book findBookByDatabaseId(ObjectId id);
-    void removeBookByDatabaseId(ObjectId id);
+    /*Mono<Book> findBookByAuthorSurname(String surname);
+    Mono<Void> saveNewAuthor(ObjectId bookId, Author author);
+    Mono<Void> deleteAuthor(ObjectId bookId, Author author);
 
-    Book findBookByAuthorSurname(String surname);
-    void saveNewAuthor(ObjectId bookId, Author author);
-    void deleteAuthor(ObjectId bookId, Author author);
+    Mono<Void> saveNewGenre(ObjectId bookId, Genre genre);
+    Mono<Void> deleteGenre(ObjectId bookId, Genre genre);*/
 
-    void saveNewGenre(ObjectId bookId, Genre genre);
-    void deleteGenre(ObjectId bookId, Genre genre);
+    Flux<Book> findCommentsByBook(String bookName);
+    /*Mono<Double> getAverageMarkByBook(ObjectId bookId);
+    Mono<Void> saveNewComment(ObjectId bookId, Comment comment);
+    Mono<Void> deleteComment(ObjectId bookId, Comment comment);*/
 
-    List<Book> findCommentsByBook(String bookName);
-    Double getAverageMarkByBook(ObjectId bookId);
-    void saveNewComment(ObjectId bookId, Comment comment);
-    void deleteComment(ObjectId bookId, Comment comment);
-
-    void saveNewBook(Book book);
-    void updateBook(Book book);
+    Mono<Book> saveNewBook(Book book);
+    Mono<UpdateResult> updateBook(Book book);
 }

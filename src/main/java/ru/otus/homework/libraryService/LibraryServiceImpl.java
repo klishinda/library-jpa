@@ -1,16 +1,21 @@
 package ru.otus.homework.libraryService;
 
+import com.mongodb.client.result.UpdateResult;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.homework.bookRepository.BookRepository;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
-import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @Component
 public class LibraryServiceImpl implements LibraryService{
@@ -21,28 +26,42 @@ public class LibraryServiceImpl implements LibraryService{
         this.bookRepository = bookRepository;
     }
 
-    @Override
+    /*@Override
     public Set<Author> getAuthorByName(String surname) {
         return bookRepository.findBookByAuthorSurname(surname).getAuthors();
-    }
+    }*/
 
     @Override
-    public Set<Author> getAllAuthors() {
-        List<Book> books = bookRepository.findAll();
-        Set<Author> authors = null;
-        for (Book b : books) {
-            if (b.getAuthors() != null) {
-                if (authors != null) {
-                    authors.addAll(b.getAuthors());
+    //public Flux<Set<Author>> getAllAuthors() {
+    public Flux<Author> getAllAuthors() {
+        Set<Author> allAuthors = null;
+        List<Set<Author>> authors =  bookRepository.findAll().map(v -> {
+            if (v.getAuthors() != null) {
+                return v.getAuthors();
+            }
+            else  {
+                return new HashSet<Author>();
+            }
+        }).collectList().block();
+
+        for (Set<Author> authorSets : authors) {
+            if (authorSets != null) {
+                if (allAuthors != null) {
+                    allAuthors.addAll(authorSets);
                 } else {
-                    authors = b.getAuthors();
+                    allAuthors = authorSets;
                 }
             }
         }
-        return authors;
+
+        return Flux.fromIterable(allAuthors);
     }
 
-    @Override
+    private void getAuthors() {
+
+    }
+
+    /*@Override
     public void addAuthor(ObjectId bookId, Author author) {
         bookRepository.saveNewAuthor(bookId, author);
     }
@@ -50,25 +69,34 @@ public class LibraryServiceImpl implements LibraryService{
     @Override
     public void removeAuthor(ObjectId bookId, Author author) {
         bookRepository.deleteAuthor(bookId, author);
-    }
+    }*/
 
     @Override
-    public Set<Genre> getAllGenres() {
-        List<Book> books = bookRepository.findAll();
-        Set<Genre> genres = null;
-        for (Book b : books) {
-            if (b.getGenres() != null) {
-                if (genres != null) {
-                    genres.addAll(b.getGenres());
+    public Flux<Genre> getAllGenres() {
+        Set<Genre> allGenres = null;
+        List<Set<Genre>> genres =  bookRepository.findAll().map(v -> {
+            if (v.getGenres() != null) {
+                return v.getGenres();
+            }
+            else  {
+                return new HashSet<Genre>();
+            }
+        }).collectList().block();
+
+        for (Set<Genre> genreSets : genres) {
+            if (genreSets != null) {
+                if (allGenres != null) {
+                    allGenres.addAll(genreSets);
                 } else {
-                    genres = b.getGenres();
+                    allGenres = genreSets;
                 }
             }
         }
-        return genres;
+
+        return Flux.fromIterable(allGenres);
     }
 
-    @Override
+    /*@Override
     public void addGenre(ObjectId bookId, Genre genre) {
         bookRepository.saveNewGenre(bookId, genre);
     }
@@ -102,25 +130,24 @@ public class LibraryServiceImpl implements LibraryService{
     @Override
     public void removeComment(ObjectId bookId, Comment comment) {
         bookRepository.deleteComment(bookId, comment);
-    }
+    }*/
 
     @Override
-    public List<Book> getAllBooks() {
+    public Flux<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
     @Override
-    public void addBook(String title, int pages, Set<Author> authors, Set<Genre> genres) {
-        Book book = new Book(title, pages, authors, genres);
-        bookRepository.saveNewBook(book);
+    public Mono<Book> addBook(Book book) {
+        return bookRepository.saveNewBook(book);
     }
 
     @Override
-    public void removeBook(ObjectId id) {
-        bookRepository.removeBookByDatabaseId(id);
+    public Mono<Long> removeBook(ObjectId id) {
+        return  bookRepository.removeBookByDatabaseId(id);
     }
 
-    @Override
+    /*@Override
     public Double getAverageMarkByBook(ObjectId id) {
         Double mark = bookRepository.getAverageMarkByBook(id);
         if (mark == null) {
@@ -129,25 +156,25 @@ public class LibraryServiceImpl implements LibraryService{
         else {
             return mark;
         }
-    }
+    }*/
 
     @Override
-    public List<Book> getAllCommentsByBook(String name) {
+    public Flux<Book> getAllCommentsByBook(String name) {
         return bookRepository.findCommentsByBook(name);
     }
 
-    @Override
+    /*@Override
     public Book getBookByName(String name) {
         return bookRepository.findBookByName(name);
-    }
+    }*/
 
     @Override
-    public Book getBookById(ObjectId id) {
+    public Mono<Book> getBookById(ObjectId id) {
         return bookRepository.findBookByDatabaseId(id);
     }
 
     @Override
-    public void updateBook(Book book) {
-        bookRepository.updateBook(book);
+    public Mono<UpdateResult> updateBook(Book book) {
+        return bookRepository.updateBook(book);
     }
 }

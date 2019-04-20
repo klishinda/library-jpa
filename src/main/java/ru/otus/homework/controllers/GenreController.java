@@ -2,11 +2,9 @@ package ru.otus.homework.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import ru.otus.homework.dto.GenreDto;
 import ru.otus.homework.libraryService.LibraryService;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class GenreController {
@@ -17,7 +15,7 @@ public class GenreController {
     }
 
     @GetMapping("/api/genres")
-    public List<GenreDto> listGenre() {
-        return libraryService.getAllGenres().stream().map(GenreDto::toDto).collect(Collectors.toList());
+    public Flux<GenreDto> listGenre() {
+        return libraryService.getAllGenres().map(GenreDto::toDto);
     }
 }

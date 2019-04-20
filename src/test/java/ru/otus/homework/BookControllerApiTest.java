@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(BookController.class)
-class BookControllerTest {
+class BookControllerApiTest {
     @Autowired
     private MockMvc mvc;
 
@@ -63,4 +63,6 @@ class BookControllerTest {
     void deleteBook() throws Exception {
         mvc.perform(delete("/api/books/").param("id", "5cafaa770785e70520f498f8").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
     }
+
+
 }

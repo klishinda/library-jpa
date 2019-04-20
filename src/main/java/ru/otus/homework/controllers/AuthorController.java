@@ -2,11 +2,9 @@ package ru.otus.homework.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import ru.otus.homework.dto.AuthorDto;
 import ru.otus.homework.libraryService.LibraryService;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class AuthorController {
@@ -17,7 +15,7 @@ public class AuthorController {
     }
 
     @GetMapping("/api/authors")
-    public List<AuthorDto> listAuthor() {
-        return libraryService.getAllAuthors().stream().map(AuthorDto::toDto).collect(Collectors.toList());
+    public Flux<AuthorDto> listAuthor() {
+        return libraryService.getAllAuthors().map(AuthorDto::toDto);
     }
 }

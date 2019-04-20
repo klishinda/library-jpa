@@ -1,26 +1,25 @@
 package ru.otus.homework.libraryService;
 
+import com.mongodb.client.result.UpdateResult;
 import org.bson.types.ObjectId;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
-import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
-import java.util.List;
-import java.util.Set;
-
 public interface LibraryService {
-    Set<Author> getAuthorByName(String name);
+    //Set<Author> getAuthorByName(String name);
 
-    Set<Author> getAllAuthors();
+    Flux<Author> getAllAuthors();
 
-    void addAuthor(ObjectId bookId, Author author);
+    /*void addAuthor(ObjectId bookId, Author author);
 
-    void removeAuthor(ObjectId bookId, Author author);
+    void removeAuthor(ObjectId bookId, Author author);*/
 
-    Set<Genre> getAllGenres();
+    Flux<Genre> getAllGenres();
 
-    void addGenre(ObjectId bookId, Genre genre);
+    /*void addGenre(ObjectId bookId, Genre genre);
 
     void removeGenre(ObjectId bookId, Genre genre);
 
@@ -28,21 +27,21 @@ public interface LibraryService {
 
     void addComment(ObjectId bookId, Comment comment);
 
-    void removeComment(ObjectId bookId, Comment comment);
+    void removeComment(ObjectId bookId, Comment comment);*/
 
-    List<Book> getAllBooks();
+    Flux<Book> getAllBooks();
 
-    void addBook(String title, int pages, Set<Author> authors, Set<Genre> genres);
+    Mono<Book> addBook(Book book);
 
-    void removeBook(ObjectId id);
+    Mono<Long> removeBook(ObjectId id);
 
-    Double getAverageMarkByBook(ObjectId id);
+    //Double getAverageMarkByBook(ObjectId id);
 
-    List<Book> getAllCommentsByBook(String name);
+    Flux<Book> getAllCommentsByBook(String name);
 
-    Book getBookByName(String name);
+    //Book getBookByName(String name);
 
-    Book getBookById(ObjectId id);
+    Mono<Book> getBookById(ObjectId id);
 
-    void updateBook(Book book);
+    Mono<UpdateResult> updateBook(Book book);
 }

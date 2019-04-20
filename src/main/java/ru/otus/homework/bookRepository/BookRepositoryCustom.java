@@ -1,26 +1,22 @@
 package ru.otus.homework.bookRepository;
 
-import org.bson.types.ObjectId;
-import ru.otus.homework.model.Author;
+import com.mongodb.client.result.UpdateResult;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.homework.model.Book;
-import ru.otus.homework.model.Comment;
-import ru.otus.homework.model.Genre;
-
-import java.util.List;
 
 public interface BookRepositoryCustom {
-    Book findBookByAuthorSurname(String surname);
-    void saveNewAuthor(ObjectId bookId, Author author);
-    void deleteAuthor(ObjectId bookId, Author author);
+    //Mono<Book> findBookByAuthorSurname(String surname);
+    //Mono<Void> saveNewAuthor(ObjectId bookId, Author author);
+    //Mono<Void> deleteAuthor(ObjectId bookId, Author author);
 
-    void saveNewGenre(ObjectId bookId, Genre genre);
-    void deleteGenre(ObjectId bookId, Genre genre);
+    /*Mono<Void> saveNewGenre(ObjectId bookId, Genre genre);
+    Mono<Void> deleteGenre(ObjectId bookId, Genre genre);*/
 
-    List<Book> findCommentsByBook(String bookName);
-    Double getAverageMarkByBook(ObjectId bookId);
-    void saveNewComment(ObjectId bookId, Comment comment);
-    void deleteComment(ObjectId bookId, Comment comment);
+    Flux<Book> findCommentsByBook(String bookName);
+    /*Mono<Void> saveNewComment(ObjectId bookId, Comment comment);
+    Mono<Void> deleteComment(ObjectId bookId, Comment comment);*/
 
-    void saveNewBook(Book book);
-    void updateBook(Book book);
+    Mono<Book> saveNewBook(Book book);
+    Mono<UpdateResult> updateBook(Book book);
 }
