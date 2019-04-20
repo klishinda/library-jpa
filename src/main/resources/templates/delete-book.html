@@ -45,10 +45,13 @@
             <div class="row">
                 <button type="submit">Delete</button>
                 <script>
+                    var urlString = window.location.href;
+                    var url = new URL(urlString);
+                    var nameParameter = url.searchParams.get("id");
+
                     $.ajax({
-                        url: "/api/books",
+                        url: "/api/books/" + encodeURIComponent(nameParameter),
                         type: "DELETE",
-                        data: "id=" + $('#id-input').val(),
                         success: function() {
                         }
                     });

@@ -22,8 +22,8 @@ public class BookController {
     }
 
     @GetMapping("/api/books")
-    public Flux<Book> listBook() {
-        return libraryService.getAllBooks();
+    public Flux<BookDto> listBook() {
+        return libraryService.getAllBooks().map(BookDto::toDto);
     }
 
     @PostMapping(value = "/api/books", consumes = MediaType.APPLICATION_JSON_VALUE)
