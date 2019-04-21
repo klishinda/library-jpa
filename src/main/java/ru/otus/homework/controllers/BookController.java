@@ -26,6 +26,11 @@ public class BookController {
         return libraryService.getAllBooks().map(BookDto::toDto);
     }
 
+    @GetMapping("/api/books/{id}")
+    public Mono<BookDto> getBook(@PathVariable("id") ObjectId id) {
+        return libraryService.getBookById(id).map(BookDto::toDto);
+    }
+
     @PostMapping(value = "/api/books", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Book>> addBook(@RequestBody Book book) {
         Book newBook = new Book(book.getName(), book.getPages(), book.getAuthors(), book.getGenres());

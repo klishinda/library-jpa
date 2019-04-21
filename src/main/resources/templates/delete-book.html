@@ -17,34 +17,38 @@
                 background: lightgray;
             }
 
-            .row {
-                margin-top: 10px;
-            }
+            .book-info, .book-info td {
+                            border: 1px solid lightgray;
+                            padding: 5px;
+                        }
         </style>
         <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
     </head>
     <body>
-        <form id="delete-form" th:action="@{/delete-book(id=${book.databaseId})}" th:method="delete" action="delete-book.html">
             <h1>Info about removing book:</h1>
 
-            <div class="row">
-                <label for="id-input">ID:</label>
-                <input id="id-input" type="text" readonly="readonly" th:value="${book.databaseId}" value="0"/>
-            </div>
-
-            <div class="row">
-                <label for="name-input">Name:</label>
-                <input id="name-input" type="text" readonly="readonly" th:value="${book.name}" value="-"/>
-            </div>
-
-            <div class="row">
-                <label for="pages-input">Pages:</label>
-                <input id="pages-input" type="text" readonly="readonly" th:value="${book.pages}" value=0 />
-            </div>
-
-            <div class="row">
-                <button type="submit">Delete</button>
+            <body1>
                 <script>
+                    var urlString = window.location.href;
+                    var url = new URL(urlString);
+                    var nameParameter = url.searchParams.get("id");
+
+                    $.ajax({
+                        url: "/api/books/" + encodeURIComponent(nameParameter),
+                        type: "GET",
+                        success: function(book) {
+                            var bookContent = "";
+                            bookContent += '<table class="book-info"><thead><tr><th>ID</th><th>NAME</th><th>PAGES</th></tr></thead>' +
+                             '<tbody><tr><td>'+ `${book.databaseId}` +'</td><td>'+ `${book.name}` +'</td><td>'+ `${book.pages}` +'</td></tr></tbody></table><br/><br/>';
+                            $('body1').append(bookContent);
+                        }
+                    });
+                </script>
+            </body1>
+
+        <button id="delete-button" type="submit">Delete</button>
+            <script>
+                $('#delete-button').click(function() {
                     var urlString = window.location.href;
                     var url = new URL(urlString);
                     var nameParameter = url.searchParams.get("id");
@@ -55,8 +59,8 @@
                         success: function() {
                         }
                     });
-                </script>
-            </div>
-        </form>
+                    window.location.replace("/");
+                });
+            </script>
     </body>
 </html>

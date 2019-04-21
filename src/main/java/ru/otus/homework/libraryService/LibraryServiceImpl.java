@@ -27,52 +27,12 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public Flux<Author> getAllAuthors() {
-        Set<Author> allAuthors = null;
-        List<Set<Author>> authors =  bookRepository.findAll().map(v -> {
-            if (v.getAuthors() != null) {
-                return v.getAuthors();
-            }
-            else  {
-                return new HashSet<Author>();
-            }
-        }).collectList().block();
-
-        for (Set<Author> authorSets : authors) {
-            if (authorSets != null) {
-                if (allAuthors != null) {
-                    allAuthors.addAll(authorSets);
-                } else {
-                    allAuthors = authorSets;
-                }
-            }
-        }
-
-        return Flux.fromIterable(allAuthors);
+        return bookRepository.findAuthorsFromAllBooks();
     }
 
     @Override
     public Flux<Genre> getAllGenres() {
-        Set<Genre> allGenres = null;
-        List<Set<Genre>> genres =  bookRepository.findAll().map(v -> {
-            if (v.getGenres() != null) {
-                return v.getGenres();
-            }
-            else  {
-                return new HashSet<Genre>();
-            }
-        }).collectList().block();
-
-        for (Set<Genre> genreSets : genres) {
-            if (genreSets != null) {
-                if (allGenres != null) {
-                    allGenres.addAll(genreSets);
-                } else {
-                    allGenres = genreSets;
-                }
-            }
-        }
-
-        return Flux.fromIterable(allGenres);
+        return bookRepository.findGenresFromAllBooks();
     }
 
     @Override
