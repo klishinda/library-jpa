@@ -11,11 +11,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ru.otus.homework.dto.BookDto;
 import ru.otus.homework.libraryService.LibraryService;
+import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
+import ru.otus.homework.model.Comment;
+import ru.otus.homework.model.Genre;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.when;
 
@@ -35,6 +38,7 @@ public class BookControllerTest {
         Book newBook1 = new Book("Test1", 1);
         Book newBook2 = new Book("Test2", 2);
         List<Book> bookList = Arrays.asList(newBook1, newBook2);
+
         when(libraryService.getAllBooks()).thenReturn(Flux.fromIterable(bookList));
         webTestClient.get().uri("/api/books")
                      .exchange()
@@ -56,9 +60,9 @@ public class BookControllerTest {
 
     @Test
     public void deleteBook() {
-        ObjectId id = new ObjectId("5cafaa770785e70520f498f8");
+        ObjectId id = new ObjectId();
         when(libraryService.removeBook(id)).thenReturn(Mono.empty());
-        webTestClient.delete().uri("/api/books/5cafaa770785e70520f498f8")
+        webTestClient.delete().uri("/api/books/" + id)
                      .exchange()
                      .expectStatus().isOk();
     }

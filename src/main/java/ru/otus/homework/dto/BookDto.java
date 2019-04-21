@@ -1,5 +1,6 @@
 package ru.otus.homework.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +22,7 @@ public class BookDto {
     private Set<Genre> genres;
     private Set<Comment> comments;
 
-    private BookDto(String id, String name, int pages, Set<Author> authors, Set<Genre> genres, Set<Comment> comments) {
+    public BookDto(String id, String name, int pages, Set<Author> authors, Set<Genre> genres, Set<Comment> comments) {
         this.databaseId = id;
         this.name = name;
         this.pages = pages;
@@ -31,6 +32,23 @@ public class BookDto {
     }
 
     public static BookDto toDto(Book book) {
-        return new BookDto(book.getDatabaseId().toString(), book.getName(), book.getPages(), book.getAuthors(), book.getGenres(), book.getComments());
+        BookDto newBook = new BookDto();
+        if (book.getDatabaseId() != null) {
+            newBook.setDatabaseId(book.getDatabaseId().toString());
+        }
+        if (book.getName() != null) {
+            newBook.setName(book.getName());
+        }
+        newBook.setPages(book.getPages());
+        if (book.getAuthors() != null) {
+            newBook.setAuthors(book.getAuthors());
+        }
+        if (book.getGenres() != null) {
+            newBook.setGenres(book.getGenres());
+        }
+        if (book.getComments() != null) {
+            newBook.setComments(book.getComments());
+        }
+        return newBook;
     }
 }

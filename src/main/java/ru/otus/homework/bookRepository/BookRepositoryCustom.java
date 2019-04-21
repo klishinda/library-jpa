@@ -6,17 +6,7 @@ import reactor.core.publisher.Mono;
 import ru.otus.homework.model.Book;
 
 public interface BookRepositoryCustom {
-    //Mono<Book> findBookByAuthorSurname(String surname);
-    //Mono<Void> saveNewAuthor(ObjectId bookId, Author author);
-    //Mono<Void> deleteAuthor(ObjectId bookId, Author author);
-
-    /*Mono<Void> saveNewGenre(ObjectId bookId, Genre genre);
-    Mono<Void> deleteGenre(ObjectId bookId, Genre genre);*/
-
-    Flux<Book> findCommentsByBook(String bookName);
-    /*Mono<Void> saveNewComment(ObjectId bookId, Comment comment);
-    Mono<Void> deleteComment(ObjectId bookId, Comment comment);*/
-
+    Flux<Book> findBooksByNameAndAllCommentsToFindingBooks(String bookName);
     Mono<Book> saveNewBook(Book book);
     Mono<UpdateResult> updateBook(Book book);
 }

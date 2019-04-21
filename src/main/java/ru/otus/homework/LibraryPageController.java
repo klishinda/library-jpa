@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.spring5.context.webflux.IReactiveDataDriverContextVariable;
+import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.homework.libraryService.LibraryService;
@@ -102,8 +104,13 @@ public class LibraryPageController {
 
     ////////////////////////// DELETE
     @GetMapping("/delete-book")
-    public String deleteBook(@RequestParam("id") ObjectId id, Model model) {
-        Book book = libraryService.getBookById(id).block();
+    @ModelAttribute
+    public String deleteBook(@RequestParam("id") ObjectId id, final Model model) {
+        /*IReactiveDataDriverContextVariable reactiveDataDrivenMode =
+                new ReactiveDataDriverContextVariable(libraryService.getBookById(id));
+        model.addAttribute("book", reactiveDataDrivenMode);*/
+
+        Mono<Book> book = libraryService.getBookById(id);
         model.addAttribute("book", book);
         return "delete-book";
     }
