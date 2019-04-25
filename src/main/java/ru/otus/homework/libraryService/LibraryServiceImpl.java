@@ -3,7 +3,7 @@ package ru.otus.homework.libraryService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.otus.homework.bookRepository.BookRepository;
+import ru.otus.homework.repositories.bookRepository.BookRepository;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;

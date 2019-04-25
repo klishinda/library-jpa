@@ -1,4 +1,4 @@
-package ru.otus.homework.bookRepository;
+package ru.otus.homework.repositories.bookRepository;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;

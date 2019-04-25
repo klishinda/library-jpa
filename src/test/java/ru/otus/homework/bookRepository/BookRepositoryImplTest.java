@@ -2,19 +2,19 @@ package ru.otus.homework.bookRepository;
 
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
+import ru.otus.homework.repositories.bookRepository.BookRepository;
 
 import java.util.Date;
 
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@DirtiesContext(classMode= DirtiesContext.ClassMode.AFTER_CLASS)
 public class BookRepositoryImplTest {
 
     @Autowired
@@ -32,7 +32,8 @@ public class BookRepositoryImplTest {
     private BookRepository bookRepository;
 
     @Test
-    public void aTest() {
+    @BeforeEach
+    public void Test() {
         DBObject objectToSave = BasicDBObjectBuilder.start().add("key", "value").get();
         mongoTemplate.save(objectToSave, "collection");
         assertThat(mongoTemplate.findAll(DBObject.class, "collection")).extracting("key").containsOnly("value");
@@ -40,7 +41,7 @@ public class BookRepositoryImplTest {
 
     @Test
     @BeforeEach
-    public void bTestNewBook() {
+    public void TestNewBook() {
         Book testBook = bookRepository.findBookByName("Test Book");
         if (testBook != null) {
             bookRepository.removeBookByDatabaseId(testBook.getDatabaseId());
