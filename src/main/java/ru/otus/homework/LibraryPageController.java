@@ -71,7 +71,7 @@ public class LibraryPageController {
     public String listCommentByBookId(@RequestParam("id") ObjectId id, Model model) {
         Book book = libraryService.getBookById(id);
         model.addAttribute("comments", book.getComments());
-        return "all-comments-by-book-id";
+        return "comments-by-book-id";
     }
 
     ////////////////////////// CREATE
@@ -84,6 +84,11 @@ public class LibraryPageController {
     @PostMapping("/add-book")
     public String addBook(@ModelAttribute Book book) {
         return "result-add-book";
+    }
+
+    @GetMapping("/access-error")
+    public String accessDenied() {
+        return "access-error";
     }
 
     ////////////////////////// UPDATE
