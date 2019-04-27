@@ -1,4 +1,4 @@
-package ru.otus.homework.bookRepository;
+package ru.otus.homework.repositories.bookRepository;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +88,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
     }
 
     @Override
-    public List<Book> findCommentsByBook(String bookName) {
+    public List<Book> findBooksByNameAndAllCommentsToFindingBooks(String bookName) {
         Query query = new Query(Criteria.where("name").regex(bookName).and("comments").ne(null));
         return mongoTemplate.find(query, Book.class);
     }
@@ -139,6 +139,18 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
         update.set("pages", book.getPages());
 
         mongoTemplate.updateFirst(query, update, Book.class);
+    }
+
+    @Override
+    public List<Author> findAuthorsFromAllBooks() {
+        return mongoTemplate.aggregate(
+                newAggregation(unwind("authors"), project().andInclude("authors.name").andInclude("authors.surname")), Book.class, Author.class).getMappedResults();
+    }
+
+    @Override
+    public List<Genre> findGenresFromAllBooks() {
+        return mongoTemplate.aggregate(
+                newAggregation(unwind("genres"), project().andInclude("genres.name")), Book.class, Genre.class).getMappedResults();
     }
 
     private Book getBookById(ObjectId bookId) {

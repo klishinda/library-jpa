@@ -34,8 +34,8 @@ public class BookController {
         libraryService.updateBook(book);
     }
 
-    @DeleteMapping("/api/books")
-    public void deleteBook(@RequestParam("id") String id) {
+    @DeleteMapping("/api/books/{id}")
+    public void deleteBook(@PathVariable("id") String id) {
         libraryService.removeBook(new ObjectId(id));
     }
 
@@ -45,7 +45,6 @@ public class BookController {
         return book.getComments().stream().map(CommentsDto::toDto).collect(Collectors.toList());
     }
 
-    //@GetMapping("/api/books/{name}/comments")
     @GetMapping("/api/books/{name}/book-comments")
     public List<BookCommentsDto> listComments(@PathVariable("name") String name) {
         return libraryService.getAllCommentsByBook(name).stream().map(BookCommentsDto::toDto).collect(Collectors.toList());

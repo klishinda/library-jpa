@@ -3,12 +3,13 @@ package ru.otus.homework.libraryService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.otus.homework.bookRepository.BookRepository;
+import ru.otus.homework.repositories.bookRepository.BookRepository;
 import ru.otus.homework.model.Author;
 import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,18 +29,7 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public Set<Author> getAllAuthors() {
-        List<Book> books = bookRepository.findAll();
-        Set<Author> authors = null;
-        for (Book b : books) {
-            if (b.getAuthors() != null) {
-                if (authors != null) {
-                    authors.addAll(b.getAuthors());
-                } else {
-                    authors = b.getAuthors();
-                }
-            }
-        }
-        return authors;
+        return new HashSet(bookRepository.findAuthorsFromAllBooks());
     }
 
     @Override
@@ -54,18 +44,7 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public Set<Genre> getAllGenres() {
-        List<Book> books = bookRepository.findAll();
-        Set<Genre> genres = null;
-        for (Book b : books) {
-            if (b.getGenres() != null) {
-                if (genres != null) {
-                    genres.addAll(b.getGenres());
-                } else {
-                    genres = b.getGenres();
-                }
-            }
-        }
-        return genres;
+        return new HashSet(bookRepository.findGenresFromAllBooks());
     }
 
     @Override
@@ -133,7 +112,7 @@ public class LibraryServiceImpl implements LibraryService{
 
     @Override
     public List<Book> getAllCommentsByBook(String name) {
-        return bookRepository.findCommentsByBook(name);
+        return bookRepository.findBooksByNameAndAllCommentsToFindingBooks(name);
     }
 
     @Override

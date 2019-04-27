@@ -1,4 +1,4 @@
-package ru.otus.homework.bookRepository;
+package ru.otus.homework.repositories.bookRepository;
 
 import org.bson.types.ObjectId;
 import ru.otus.homework.model.Author;
@@ -16,11 +16,14 @@ public interface BookRepositoryCustom {
     void saveNewGenre(ObjectId bookId, Genre genre);
     void deleteGenre(ObjectId bookId, Genre genre);
 
-    List<Book> findCommentsByBook(String bookName);
+    List<Book> findBooksByNameAndAllCommentsToFindingBooks(String bookName);
     Double getAverageMarkByBook(ObjectId bookId);
     void saveNewComment(ObjectId bookId, Comment comment);
     void deleteComment(ObjectId bookId, Comment comment);
 
     void saveNewBook(Book book);
     void updateBook(Book book);
+
+    List<Author> findAuthorsFromAllBooks();
+    List<Genre> findGenresFromAllBooks();
 }
