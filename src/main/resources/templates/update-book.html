@@ -20,27 +20,34 @@
             .row {
                 margin-top: 10px;
             }
+
+            .book-info, .book-info td {
+                border: 1px solid lightgray;
+                padding: 5px;
+            }
         </style>
         <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
     </head>
     <body>
-        <form id="edit-form" th:action="@{/update-book(id=${currentBook.databaseId})}" th:method="put">
             <h1>Book:</h1>
 
-            <div class="row">
-                <label for="id">ID книги:</label>
-                <input id="id" type="text" readonly="readonly" th:field="${currentBook.databaseId}"/>
-            </div>
-
-            <div class="row">
-                <label for="name">Название книги:</label>
-                <input id="name" type="text" readonly="readonly" th:value="${currentBook.name}"/>
-            </div>
-
-            <div class="row">
-                <label for="pages">Количество страниц:</label>
-                <input id="pages" type="number" readonly="readonly" th:value="${currentBook.pages}"/>
-            </div>
+            <body1>
+                <script>
+                    var urlString = window.location.href;
+                    var url = new URL(urlString);
+                    var nameParameter = url.searchParams.get("id");
+                    $.ajax({
+                        url: "/api/books/" + encodeURIComponent(nameParameter),
+                        type: "GET",
+                        success: function(book) {
+                            var bookContent = "";
+                            bookContent += '<table class="book-info"><thead><tr><th>ID</th><th>NAME</th><th>PAGES</th></tr></thead>' +
+                             '<tbody><tr><td>'+ `${book.databaseId}` +'</td><td>'+ `${book.name}` +'</td><td>'+ `${book.pages}` +'</td></tr></tbody></table><br/><br/>';
+                            $('body1').append(bookContent);
+                        }
+                    });
+                </script>
+            </body1>
 
             <div class="row">
                 <label for="name-input">Введите новое название книги:</label>
@@ -52,21 +59,21 @@
                 <input id="pages-input" type="number"/>
             </div>
 
-            <div class="row">
-                <button id="save-button" type="submit">Save</button>
-            </div>
-
+            <button id="save-button" type="submit">SAVE</button>
             <script>
                 $('#save-button').click(function() {
+                    var urlString = window.location.href;
+                    var url = new URL(urlString);
+                    var nameParameter = url.searchParams.get("id");
                     $.ajax({
                         url: "/api/books",
                         type: "PUT",
-                        data: "databaseId=" + $('#id').val() + "&name=" + $('#name-input').val() + "&pages=" + $('#pages-input').val(),
+                        data: "databaseId=" + nameParameter + "&name=" + $('#name-input').val() + "&pages=" + $('#pages-input').val(),
                         success: function() {
                         }
                     });
+                    window.location.replace("/");
                 });
             </script>
-        </form>
     </body>
 </html>

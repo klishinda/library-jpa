@@ -11,7 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.io.File;
 import java.io.IOException;
 
-import static ru.otus.homework.mongoService.MongoServiceImpl.ReadTestDataJsons;
+import static ru.otus.homework.mongoService.MongoServiceImpl.*;
 
 @ChangeLog
 public class Changelog {
@@ -37,10 +37,13 @@ public class Changelog {
 
     @ChangeSet(order = "002", id = "insertUser", author = "dklishin")
     public void insertUser(DB db) {
+        System.out.println("adding users");
         DBCollection userCollection = db.getCollection(USERS_COLLECTION);
-        BasicDBObject user = new BasicDBObject().append("username", "DKLISHIN").append("password", new BCryptPasswordEncoder().encode("password"));
-        BasicDBObject admin = new BasicDBObject().append("username", "ADMIN").append("password", new BCryptPasswordEncoder().encode("admin"));
+        BasicDBObject user = new BasicDBObject().append("username", USER_NAME).append("password", USER_PASSWORD).append("role", USER_ROLE);
+        BasicDBObject admin = new BasicDBObject().append("username", ADMIN_NAME).append("password", ADMIN_PASSWORD).append("role", ADMIN_ROLE);
+        BasicDBObject guest = new BasicDBObject().append("username", GUEST_NAME).append("password", GUEST_PASSWORD).append("role", GUEST_ROLE);
         userCollection.insert(user);
         userCollection.insert(admin);
+        userCollection.insert(guest);
     }
 }

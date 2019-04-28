@@ -1,8 +1,12 @@
 package ru.otus.homework;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookController.class)
 class BookControllerTest {
 
+    private MockMvc mockMvc;
+
     @Autowired
     private WebApplicationContext context;
 
@@ -51,40 +57,91 @@ class BookControllerTest {
     @MockBean
     private UserDetailsServiceImpl userDetails;
 
-    @Test
-    @WithMockUser(username = "ADMIN", password = "admin")
-    void listBookAccessOk() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        mockMvc.perform(get("/api/books").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+    @MockBean
+    private LibraryPageController libraryPageController;
+
+    @BeforeEach
+    void init() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     }
 
-    @Test
-    void listBookAccessForbidden() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        mockMvc.perform(get("/api/books").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().is3xxRedirection());
-
+    // ADMIN ROLE TESTS
+    @ParameterizedTest
+    @ValueSource(strings = {"/api/books", "/all-authors", "/all-genres", "/comments-by-book-id?id=5cc1fe960785e732705357fb", "/all-comments-by-book?name=test",
+                            "/add-book", "/update-book?id=5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb"})
+    @WithMockUser(username = "ADMIN", password = "admin", roles = "ADMIN")
+    void checkAccessAdminGet(String url) throws Exception {
+        mockMvc.perform(get(url)).andExpect(status().isOk());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"/api/books", "/add-book"})
+    @WithMockUser(username = "ADMIN", password = "admin", roles = "ADMIN")
+    void checkAccessAdminPost(String url) throws Exception {
+        mockMvc.perform(post(url).content("{\"name\":\"Book\",\"pages\":100}").contentType(APPLICATION_JSON_UTF8)).andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/api/books", "/update-book?id=5cc1fe960785e732705357fb"})
+    @WithMockUser(username = "ADMIN", password = "admin", roles = "ADMIN")
+    void checkAccessAdminPut(String url) throws Exception {
+        mockMvc.perform(put(url)).andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/api/books/5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb"})
+    @WithMockUser(username = "ADMIN", password = "admin", roles = "ADMIN")
+    void checkAccessAdminDelete(String url) throws Exception {
+        mockMvc.perform(delete(url)).andExpect(status().isOk());
+    }
+
+    // USER ROLE TESTS
     @Test
-    @WithMockUser(username = "ADMIN", password = "admin")
-    void addBook() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+    @WithMockUser(username = "USER", password = "user", roles = "USER")
+    void userApiAccess() throws Exception {
+        mockMvc.perform(get("/api/books")).andExpect(status().isOk());
+        mockMvc.perform(post("/api/books").contentType(APPLICATION_JSON_UTF8).content(createTestBook())).andExpect(status().isForbidden());
+        mockMvc.perform(put("/api/books")).andExpect(status().isForbidden());
+        mockMvc.perform(delete("/api/books/5cafaa770785e70520f498f8")).andExpect(status().isForbidden());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/add-book", "/update-book?id=5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb"})
+    @WithMockUser(username = "USER", password = "user", roles = "USER")
+    void checkAccessUserGet(String url) throws Exception {
+        mockMvc.perform(get(url)).andExpect(status().isForbidden());
+    }
+
+    // GUEST ROLE TESTS
+    @Test
+    @WithMockUser(username = "GUEST", password = "guest", roles = "GUEST")
+    void guestApiAccess() throws Exception {
+        mockMvc.perform(get("/api/books")).andExpect(status().isOk());
+        mockMvc.perform(post("/api/books").contentType(APPLICATION_JSON_UTF8).content(createTestBook())).andExpect(status().isForbidden());
+        mockMvc.perform(put("/api/books")).andExpect(status().isForbidden());
+        mockMvc.perform(delete("/api/books/5cafaa770785e70520f498f8")).andExpect(status().isForbidden());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"/all-authors", "/all-genres", "/comments-by-book-id?id=5cc1fe960785e732705357fb", "/all-comments-by-book?name=test",
+                            "/add-book", "/update-book?id=5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb"})
+    @WithMockUser(username = "GUEST", password = "guest", roles = "GUEST")
+    void checkAccessGuestGet(String url) throws Exception {
+        mockMvc.perform(get(url)).andExpect(status().isForbidden());
+    }
+
+    // NOT AUTHORIZED ROLE TESTS
+    @Test
+    void noRoleApiAccess() throws Exception {
+        mockMvc.perform(get("/api/books")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(post("/api/books").contentType(APPLICATION_JSON_UTF8).content(createTestBook())).andExpect(status().is3xxRedirection());
+        mockMvc.perform(put("/api/books")).andExpect(status().is3xxRedirection());
+        mockMvc.perform(delete("/api/books/5cafaa770785e70520f498f8")).andExpect(status().is3xxRedirection());
+    }
+
+    private String createTestBook() throws JsonProcessingException {
         Book book = new Book("Test1", 555);
         ObjectMapper objectMapper = new ObjectMapper();
-        mockMvc.perform(post("/api/books").contentType(APPLICATION_JSON_UTF8).content(objectMapper.writeValueAsString(book))).andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(username = "ADMIN", password = "admin")
-    void updateBook() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        mockMvc.perform(put("/api/books").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(username = "ADMIN", password = "admin")
-    void deleteBook() throws Exception {
-        MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        mockMvc.perform(delete("/api/books/5cafaa770785e70520f498f8").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+        return objectMapper.writeValueAsString(book);
     }
 }

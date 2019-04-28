@@ -2,6 +2,7 @@ package ru.otus.homework.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,10 +29,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .anyRequest().authenticated()
+                .antMatchers("/").authenticated()
+                .antMatchers(HttpMethod.GET,"/api/books").authenticated()
+                .antMatchers("/initialization").hasRole("ADMIN")
+                .antMatchers("/add-book").hasRole("ADMIN")
+                .antMatchers("/update-book").hasRole("ADMIN")
+                .antMatchers("/delete-book").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST).hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT).hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET).hasAnyRole("USER", "ADMIN")
+                .and()
+                .rememberMe().key("SecurityRememberMeKey")
+                .tokenValiditySeconds(3600)
+                .alwaysRemember(true)
                 .and()
                 .formLogin()
-                .failureForwardUrl("/error");
+                .and()
+                .exceptionHandling().accessDeniedPage("/access-error");
     }
 
     @Bean

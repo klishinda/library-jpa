@@ -24,6 +24,11 @@ public class BookController {
         return libraryService.getAllBooks().stream().map(BookDto::toDto).collect(Collectors.toList());
     }
 
+    @GetMapping("/api/books/{id}")
+    public BookDto getBook(@PathVariable("id") ObjectId id) {
+        return BookDto.toDto(libraryService.getBookById(id));
+    }
+
     @PostMapping("/api/books")
     public void addBook(@RequestBody Book book) {
         libraryService.addBook(book.getName(), book.getPages(), book.getAuthors(), book.getGenres());

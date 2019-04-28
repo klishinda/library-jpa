@@ -19,7 +19,19 @@ public class MongoServiceImpl implements MongoService {
     private final MongoTemplate mongoTemplate;
     private final static String LIBRARY_COLLECTION = "library";
     private final static String USERS_COLLECTION = "users";
-    private static final String FILES_PATH = "scripts/testData/";
+    private final static String FILES_PATH = "scripts/testData/";
+
+    public final static String USER_NAME = "USER";
+    public final static String ADMIN_NAME = "ADMIN";
+    public final static String GUEST_NAME = "GUEST";
+
+    public final static String USER_PASSWORD = new BCryptPasswordEncoder().encode("user");
+    public final static String ADMIN_PASSWORD = new BCryptPasswordEncoder().encode("admin");
+    public final static String GUEST_PASSWORD = new BCryptPasswordEncoder().encode("guest");
+
+    public final static String USER_ROLE = "ROLE_USER";
+    public final static String ADMIN_ROLE = "ROLE_ADMIN";
+    public final static String GUEST_ROLE = "ROLE_GUEST";
 
     public MongoServiceImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
@@ -55,8 +67,9 @@ public class MongoServiceImpl implements MongoService {
             }
         }
 
-        mongoTemplate.insert(new User("DKLISHIN", new BCryptPasswordEncoder().encode("password")), USERS_COLLECTION);
-        mongoTemplate.insert(new User("ADMIN", new BCryptPasswordEncoder().encode("admin")), USERS_COLLECTION);
+        mongoTemplate.insert(new User(USER_NAME, USER_PASSWORD, USER_ROLE), USERS_COLLECTION);
+        mongoTemplate.insert(new User(ADMIN_NAME, ADMIN_PASSWORD, ADMIN_ROLE), USERS_COLLECTION);
+        mongoTemplate.insert(new User(GUEST_NAME, GUEST_PASSWORD, GUEST_ROLE), USERS_COLLECTION);
     }
 
     public static Document ReadTestDataJsons(File folder, File file) throws IOException {
