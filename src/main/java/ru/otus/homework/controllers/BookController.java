@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.otus.homework.dto.BookCommentsDto;
 import ru.otus.homework.dto.BookDto;
 import ru.otus.homework.dto.CommentsDto;
+import ru.otus.homework.integrationController.book.BookGateway;
 import ru.otus.homework.libraryService.LibraryService;
 import ru.otus.homework.model.Book;
 
@@ -13,10 +14,12 @@ import java.util.stream.Collectors;
 
 @RestController
 public class BookController {
-    private final LibraryService libraryService;
+    private LibraryService libraryService;
+    private BookGateway bookGateway;
 
-    public BookController(LibraryService libraryService) {
+    public BookController(LibraryService libraryService, BookGateway bookGateway) {
         this.libraryService = libraryService;
+        this.bookGateway = bookGateway;
     }
 
     @GetMapping("/api/books")
@@ -31,17 +34,17 @@ public class BookController {
 
     @PostMapping("/api/books")
     public void addBook(@RequestBody Book book) {
-        libraryService.addBook(book.getName(), book.getPages(), book.getAuthors(), book.getGenres());
+        bookGateway.addBook(book);
     }
 
     @PutMapping("/api/books")
     public void updateBook(@ModelAttribute Book book) {
-        libraryService.updateBook(book);
+        bookGateway.updateBook(book);
     }
 
     @DeleteMapping("/api/books/{id}")
     public void deleteBook(@PathVariable("id") String id) {
-        libraryService.removeBook(new ObjectId(id));
+        bookGateway.removeBook(new ObjectId(id));
     }
 
     @GetMapping("/api/books/{id}/comments")

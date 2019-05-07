@@ -6,6 +6,7 @@ import ru.otus.homework.model.Book;
 import ru.otus.homework.model.Comment;
 import ru.otus.homework.model.Genre;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public interface LibraryService {
 
     List<Book> getAllBooks();
 
-    void addBook(String title, int pages, Set<Author> authors, Set<Genre> genres);
+    void addBook(Book book);
 
     void removeBook(ObjectId id);
 
@@ -45,4 +46,10 @@ public interface LibraryService {
     Book getBookById(ObjectId id);
 
     void updateBook(Book book);
+
+    Book generateNewPositiveComment(Book book) throws ParseException;
+
+    void log(Book book);
+
+    void log(ObjectId id);
 }

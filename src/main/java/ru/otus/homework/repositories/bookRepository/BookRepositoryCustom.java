@@ -26,4 +26,5 @@ public interface BookRepositoryCustom {
 
     List<Author> findAuthorsFromAllBooks();
     List<Genre> findGenresFromAllBooks();
+    List<Book> findBooksWritingByAuthor(Author author);
 }
