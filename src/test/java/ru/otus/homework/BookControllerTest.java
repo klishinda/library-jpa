@@ -106,7 +106,7 @@ class BookControllerTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"/add-book", "/update-book?id=5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb"})
+    @ValueSource(strings = {"/add-book", "/update-book?id=5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb", "/actuator"})
     @WithMockUser(username = "USER", password = "user", roles = "USER")
     void checkAccessUserGet(String url) throws Exception {
         mockMvc.perform(get(url)).andExpect(status().isForbidden());
@@ -124,7 +124,7 @@ class BookControllerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"/all-authors", "/all-genres", "/comments-by-book-id?id=5cc1fe960785e732705357fb", "/all-comments-by-book?name=test",
-                            "/add-book", "/update-book?id=5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb"})
+                            "/add-book", "/update-book?id=5cc1fe960785e732705357fb", "/delete-book?id=5cc1fe960785e732705357fb", "/actuator"})
     @WithMockUser(username = "GUEST", password = "guest", roles = "GUEST")
     void checkAccessGuestGet(String url) throws Exception {
         mockMvc.perform(get(url)).andExpect(status().isForbidden());
