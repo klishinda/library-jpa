@@ -153,6 +153,12 @@ public class BookRepositoryImpl implements BookRepositoryCustom{
                 newAggregation(unwind("genres"), project().andInclude("genres.name")), Book.class, Genre.class).getMappedResults();
     }
 
+    @Override
+    public List<Book> findBooksWritingByAuthor(Author author) {
+        Query query = new Query(Criteria.where("authors.surname").is(author.getSurname()).and("authors.name").is(author.getName()));
+        return mongoTemplate.find(query, Book.class);
+    }
+
     private Book getBookById(ObjectId bookId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(bookId));
