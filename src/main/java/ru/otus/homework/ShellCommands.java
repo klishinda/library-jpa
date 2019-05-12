@@ -6,22 +6,27 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import org.springframework.shell.table.Table;
 import ru.otus.homework.libraryService.LibraryService;
-import ru.otus.homework.model.Author;
-import ru.otus.homework.model.Book;
-import ru.otus.homework.model.Comment;
-import ru.otus.homework.model.Genre;
+import ru.otus.homework.model.*;
+import ru.otus.homework.mongoService.MongoService;
 import ru.otus.homework.printer.ResultsPrinter;
+import ru.otus.homework.repositories.UserRepository;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @ShellComponent
 public class ShellCommands {
     private LibraryService libraryService;
+    private MongoService mongoService;
+    private UserRepository userRepository;
     private ResultsPrinter printer;
 
-    public ShellCommands(LibraryService libraryService, ResultsPrinter printer) {
+    public ShellCommands(LibraryService libraryService, MongoService mongoService, UserRepository userRepository, ResultsPrinter printer) {
         this.libraryService = libraryService;
+        this.mongoService = mongoService;
+        this.userRepository = userRepository;
         this.printer = printer;
     }
 
@@ -103,14 +108,19 @@ public class ShellCommands {
         return printer.printBookComments(libraryService.getAllCommentsByBook(name));
     }
 
-    /*@ShellMethod("Add book")
-    private void addBook(@ShellOption String name,
-                         @ShellOption int pages) {
-        libraryService.addBook(name, pages);
-    }*/
-
     @ShellMethod("Remove book")
     private void deleteBook(@ShellOption ObjectId id) {
         libraryService.removeBook(id);
+    }
+
+    @ShellMethod("Add test data")
+    private void initializeDb() throws IOException {
+        mongoService.createCollection();
+        mongoService.addTestData();
+    }
+
+    @ShellMethod("Get all users")
+    private List<String> getAllUsers() {
+        return userRepository.findAll().stream().map(User::getUsername).collect(Collectors.toList());
     }
 }

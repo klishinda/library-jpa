@@ -4,12 +4,13 @@ server:
 spring:
   data:
     mongodb:
-      port: 27017
-      host: localhost
-      username: root
-      password: root
-      database: library
-      authentication-database: library
+      #port: 27017
+      #host: localhost
+      #username: root
+      #password: root
+      uri: mongodb://mongo_container:27017/library
+      #database: library
+      #authentication-database: library
   jpa:
     properties:
       hibernate:
@@ -25,9 +26,18 @@ management:
           - metrics
           - info
           - logfile
+          - prometheus
   endpoint:
     health:
       show-details: "ALWAYS"
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
 logging:
   file: library_log.log
