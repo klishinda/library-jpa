@@ -37,7 +37,6 @@ public class Changelog {
 
     @ChangeSet(order = "002", id = "insertUser", author = "dklishin")
     public void insertUser(DB db) {
-        System.out.println("adding users");
         DBCollection userCollection = db.getCollection(USERS_COLLECTION);
         BasicDBObject user = new BasicDBObject().append("username", USER_NAME).append("password", USER_PASSWORD).append("role", USER_ROLE);
         BasicDBObject admin = new BasicDBObject().append("username", ADMIN_NAME).append("password", ADMIN_PASSWORD).append("role", ADMIN_ROLE);
