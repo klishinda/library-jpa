@@ -23,7 +23,7 @@
                 padding: 2px;
             }
         </style>
-        <script src="webjars/jquery/3.3.1/jquery.min.js"></script>
+        <script src="webjars/jquery/2.1.1/jquery.min.js"></script>
     </head>
 
     <body>
@@ -150,6 +150,13 @@
                     </td>
                     <td>Application healthchecker</td>
                 </tr>
+                <tr>
+                    <td>
+                        <a th:href="@{/hystrix/monitor?stream=http%3A%2F%2F127.0.0.1%3A8089%2Factuator%2Fhystrix.stream}">hystrix</a>
+                    </td>
+                    <td>Hystrix monitoring</td>
+                </tr>
+
                 <tr>
                     <td>
                         <a th:href="@{/logout}">logout</a>

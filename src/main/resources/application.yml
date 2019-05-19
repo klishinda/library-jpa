@@ -21,13 +21,8 @@ management:
   endpoints:
     web:
       exposure:
-        include:
-          - health
-          - metrics
-          - info
-          - logfile
-          - prometheus
-          - hystrix.stream
+        include: "*"
+      base-path: /actuator
   endpoint:
     health:
       show-details: ALWAYS
