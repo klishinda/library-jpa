@@ -1,5 +1,6 @@
 package ru.otus.homework.libraryService;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class LibraryServiceImpl implements LibraryService{
     }
 
     @Override
+    @HystrixCommand
     public Set<Author> getAllAuthors() {
         return new HashSet(bookRepository.findAuthorsFromAllBooks());
     }
@@ -84,16 +86,19 @@ public class LibraryServiceImpl implements LibraryService{
     }
 
     @Override
+    @HystrixCommand
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
     @Override
+    @HystrixCommand
     public void addBook(Book book) {
         bookRepository.saveNewBook(book);
     }
 
     @Override
+    @HystrixCommand
     public void removeBook(ObjectId id) {
         bookRepository.removeBookByDatabaseId(id);
     }
@@ -110,21 +115,25 @@ public class LibraryServiceImpl implements LibraryService{
     }
 
     @Override
+    @HystrixCommand
     public List<Book> getAllCommentsByBook(String name) {
         return bookRepository.findBooksByNameAndAllCommentsToFindingBooks(name);
     }
 
     @Override
+    @HystrixCommand
     public Book getBookByName(String name) {
         return bookRepository.findBookByName(name);
     }
 
     @Override
+    @HystrixCommand
     public Book getBookById(ObjectId id) {
         return bookRepository.findBookByDatabaseId(id);
     }
 
     @Override
+    @HystrixCommand
     public void updateBook(Book book) {
         bookRepository.updateBook(book);
     }

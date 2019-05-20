@@ -4,13 +4,13 @@ server:
 spring:
   data:
     mongodb:
-      #port: 27017
-      #host: localhost
-      #username: root
-      #password: root
-      uri: mongodb://mongo_container:27017/library
-      #database: library
-      #authentication-database: library
+      port: 27017
+      host: localhost
+      username: root
+      password: root
+      #uri: mongodb://mongo_container:27017/library
+      database: library
+      authentication-database: library
   jpa:
     properties:
       hibernate:
@@ -21,19 +21,18 @@ management:
   endpoints:
     web:
       exposure:
-        include:
-          - health
-          - metrics
-          - info
-          - logfile
-          - prometheus
+        include: "*"
+      base-path: /actuator
   endpoint:
     health:
-      show-details: "ALWAYS"
+      show-details: ALWAYS
     metrics:
       enabled: true
     prometheus:
       enabled: true
+    hystrix:
+      stream:
+        enabled: true
   metrics:
     export:
       prometheus:
