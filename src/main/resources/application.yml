@@ -16,6 +16,13 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          searchLocations: file:///C:/properties
 
 management:
   endpoints:
