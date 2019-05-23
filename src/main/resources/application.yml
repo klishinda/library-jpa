@@ -2,28 +2,25 @@ server:
   port: 8089
 
 spring:
-  data:
-    mongodb:
-      port: 27017
-      host: localhost
-      username: root
-      password: root
+  #data:
+    #mongodb:
+      #port: 27017
+      #host: localhost
+      #username: root
+      #password: root
       #uri: mongodb://mongo_container:27017/library
-      database: library
-      authentication-database: library
+      #database: library
+      #authentication-database: library
   jpa:
     properties:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
-  profiles:
-    active: native
   cloud:
     config:
-      server:
-        native:
-          searchLocations: file:///C:/properties
-
+      uri: http://localhost:8888
+  application:
+    name: library
 management:
   endpoints:
     web:
